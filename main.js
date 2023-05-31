@@ -1,13 +1,15 @@
-const NAME_NOTION = 'Name';
-const DATE_NOTION = 'Date';
-const TAGS_NOTION = 'Tags';
-const LOCATION_NOTION = 'Location';
-const DESCRIPTION_NOTION = 'Description';
+const NOTION = {
+    name: 'Name',
+    date: 'Date',
+    tags: 'Tags',
+    location: 'Location',
+    description: 'Description',
 
-const EVENT_ID_NOTION = 'Event ID';
-const CALENDAR_NAME_NOTION = 'Calendar';
-const CALENDAR_ID_NOTION = 'Calendar ID';
-const LAST_SYNC_NOTION = 'Last Sync';
+    eventId: 'Event ID',
+    calendarName: 'Calendar',
+    calendarId: 'Calendar ID',
+    lastSync: 'Last Sync',
+};
 
 const ARCHIVE_CANCELLED_EVENTS = true;
 const DELETE_CANCELLED_EVENTS = true;
@@ -32,8 +34,8 @@ function main() {
 
     modified_eIds = IGNORE_RECENTLY_PUSHED ? modified_eIds : new Set();
 
-    for (var c_name of Object.keys(CALENDAR_IDS)) {
-        syncFromGCal(c_name, false, modified_eIds);
+    for (var calendarName of Object.keys(CALENDAR_IDS)) {
+        syncFromGCal(calendarName, false, modified_eIds);
     }
 }
 
@@ -48,8 +50,8 @@ function fullSync() {
 
     console.log('Preforming full sync. Page token, time min, and time max will be reset.');
 
-    for (var c_name of Object.keys(CALENDAR_IDS)) {
-        syncFromGCal(c_name, true, new Set());
+    for (let calendarName of Object.keys(CALENDAR_IDS)) {
+        syncFromGCal(calendarName, true, new Set());
     }
 }
 
@@ -64,7 +66,7 @@ function syncToGCal() {
     const payload = {
         sorts: [{ timestamp: 'last_edited_time', direction: 'descending' }],
         filter: {
-            property: TAGS_NOTION,
+            property: NOTION.tags,
             multi_select: {
                 does_not_contain: IGNORE_SYNC_TAG_NAME,
             },
@@ -91,10 +93,10 @@ function syncToGCal() {
             continue;
         }
 
-        let calendar_id = result.properties[CALENDAR_ID_NOTION].select;
+        let calendar_id = result.properties[NOTION.calendarId].select;
         calendar_id = calendar_id ? calendar_id.name : null;
 
-        let calendar_name = result.properties[CALENDAR_NAME_NOTION].select;
+        let calendar_name = result.properties[NOTION.calendarName].select;
         calendar_name = calendar_name ? calendar_name.name : null;
 
         if (CALENDAR_IDS[calendar_name] && calendar_id && event.id) {
@@ -240,7 +242,7 @@ function parseEvents(events, ignored_eIds) {
                 event.id,
                 page_response.id
             );
-            let tags = page_response.properties[TAGS_NOTION].multi_select;
+            let tags = page_response.properties[NOTION.tags].multi_select;
             requests.push(updateDatabaseEntry(event, page_response.id, tags || []));
 
             continue;
@@ -286,11 +288,12 @@ function parseEvents(events, ignored_eIds) {
  * @returns {*} request object if multi is true, fetch response if multi is false
  */
 function updateDatabaseEntry(event, page_id, existing_tags = [], multi = true) {
-    let properties = convertToNotionProperty(event, existing_tags);
+    let properties = convertCalendarEventToNotionProperties(event, existing_tags);
     let archive = ARCHIVE_CANCELLED_EVENTS && event.status === 'cancelled';
 
     return pushDatabaseUpdate(properties, page_id, archive, multi);
 }
+
 /**
  * Push update to notion database for page
  * @param {Object} properties
@@ -338,7 +341,7 @@ function createDatabaseEntry(event) {
         database_id: DATABASE_ID,
     };
 
-    payload['properties'] = convertToNotionProperty(event);
+    payload['properties'] = convertCalendarEventToNotionProperties(event);
 
     if (!checkNotionProperty(payload['properties'])) {
         throw new InvalidEventError('Invalid Notion property structure');
@@ -362,7 +365,7 @@ function createDatabaseEntry(event) {
  */
 function checkNotionProperty(properties) {
     // Check if description is too long
-    if (properties[DESCRIPTION_NOTION].rich_text[0].text.content.length > 2000) {
+    if (properties[NOTION.description].rich_text[0].text.content.length > 2000) {
         console.log('Event description is too long.');
         return false;
     }
@@ -380,13 +383,13 @@ function getPageFromEvent(event, on_before_date = null) {
     const url = getDatabaseURL();
     let payload = {
         filter: {
-            and: [{ property: EVENT_ID_NOTION, rich_text: { equals: event.id } }],
+            and: [{ property: NOTION.eventId, rich_text: { equals: event.id } }],
         },
     };
 
     if (on_before_date) {
         payload['filter']['and'].push({
-            property: LAST_SYNC_NOTION,
+            property: NOTION.lastSync,
             date: { on_or_before: new Date().toISOString(on_before_date) },
         });
     }
@@ -494,10 +497,10 @@ function getRelativeDate(daysOffset, hour) {
  * @param {String[]} existing_tags - existing tags to add to event
  * @returns {Object} notion property object
  */
-function convertToNotionProperty(event, existing_tags = []) {
-    let properties = getBaseNotionProperties(event.id, event.c_name);
+function convertCalendarEventToNotionProperties(event, existing_tags = []) {
+    let properties = createBasicNotionProperties(event.id, event.c_name);
 
-    properties[DESCRIPTION_NOTION] = {
+    properties[NOTION.description] = {
         type: 'rich_text',
         rich_text: [
             {
@@ -508,7 +511,7 @@ function convertToNotionProperty(event, existing_tags = []) {
         ],
     };
 
-    properties[LOCATION_NOTION] = {
+    properties[NOTION.location] = {
         type: 'rich_text',
         rich_text: [
             {
@@ -545,7 +548,7 @@ function convertToNotionProperty(event, existing_tags = []) {
             end_time = event.end.dateTime;
         }
 
-        properties[DATE_NOTION] = {
+        properties[NOTION.date] = {
             type: 'date',
             date: {
                 start: start_time,
@@ -553,7 +556,7 @@ function convertToNotionProperty(event, existing_tags = []) {
             },
         };
 
-        properties[NAME_NOTION] = {
+        properties[NOTION.name] = {
             type: 'title',
             title: [
                 {
@@ -567,9 +570,9 @@ function convertToNotionProperty(event, existing_tags = []) {
     }
 
     if (event.status === 'cancelled') {
-        properties[TAGS_NOTION] = { multi_select: existing_tags };
+        properties[NOTION.tags] = { multi_select: existing_tags };
 
-        properties[TAGS_NOTION].multi_select.push({
+        properties[NOTION.tags].multi_select.push({
             name: CANCELLED_TAG_NAME,
         });
     }
@@ -583,15 +586,15 @@ function convertToNotionProperty(event, existing_tags = []) {
  * @param {String} calendar_name - calendar key name
  * @returns {Object} - base notion property object
  *  */
-function getBaseNotionProperties(event_id, calendar_name) {
+function createBasicNotionProperties(event_id, calendar_name) {
     return {
-        [LAST_SYNC_NOTION]: {
+        [NOTION.lastSync]: {
             type: 'date',
             date: {
                 start: new Date().toISOString(),
             },
         },
-        [EVENT_ID_NOTION]: {
+        [NOTION.eventId]: {
             type: 'rich_text',
             rich_text: [
                 {
@@ -601,12 +604,12 @@ function getBaseNotionProperties(event_id, calendar_name) {
                 },
             ],
         },
-        [CALENDAR_ID_NOTION]: {
+        [NOTION.calendarId]: {
             select: {
                 name: CALENDAR_IDS[calendar_name],
             },
         },
-        [CALENDAR_NAME_NOTION]: {
+        [NOTION.calendarName]: {
             select: {
                 name: calendar_name,
             },
@@ -620,19 +623,19 @@ function getBaseNotionProperties(event_id, calendar_name) {
  * @returns {Object} - GCal event object Return False if required properties not found
  */
 function convertToGCalEvent(page_result) {
-    let e_id = page_result.properties[EVENT_ID_NOTION].rich_text;
+    let e_id = page_result.properties[NOTION.eventId].rich_text;
     e_id = flattenRichText(e_id);
 
-    let e_summary = page_result.properties[NAME_NOTION].title;
+    let e_summary = page_result.properties[NOTION.name].title;
     e_summary = flattenRichText(e_summary);
 
-    let e_description = page_result.properties[DESCRIPTION_NOTION].rich_text;
+    let e_description = page_result.properties[NOTION.description].rich_text;
     e_description = flattenRichText(e_description);
 
     let e_location = page_result.properties[LOCATION_NOTION].rich_text;
     e_location = flattenRichText(e_location);
 
-    let dates = page_result.properties[DATE_NOTION];
+    let dates = page_result.properties[NOTION.date];
 
     if (dates.date) {
         let all_day = dates.date.end === null;
@@ -690,9 +693,9 @@ function getPageId(event) {
     const payload = {
         filter: {
             and: [
-                { property: EVENT_ID_NOTION, rich_text: { equals: event.id } },
+                { property: NOTION.eventId, rich_text: { equals: event.id } },
                 {
-                    property: TAGS_NOTION,
+                    property: NOTION.tags,
                     multi_select: {
                         does_not_contain: IGNORE_SYNC_TAG_NAME,
                     },
@@ -736,7 +739,7 @@ function deleteCancelledEvents() {
     const url = getDatabaseURL();
     const payload = {
         filter: {
-            property: TAGS_NOTION,
+            property: NOTION.tags,
             multi_select: {
                 contains: CANCELLED_TAG_NAME,
                 does_not_contain: IGNORE_SYNC_TAG_NAME,
@@ -750,8 +753,8 @@ function deleteCancelledEvents() {
 
         if (isPageUpdatedRecently(result)) {
             try {
-                let event_id = result.properties[EVENT_ID_NOTION].rich_text;
-                let calendar_id = result.properties[CALENDAR_ID_NOTION].select.name;
+                let event_id = result.properties[NOTION.eventId].rich_text;
+                let calendar_id = result.properties[NOTION.calendarId].select.name;
 
                 event_id = flattenRichText(event_id);
 
@@ -791,7 +794,7 @@ function deleteEvent(event_id, calendar_id) {
  * @return {Boolean} - True if page has been updated recently, false otherwise
  * */
 function isPageUpdatedRecently(page_result) {
-    let last_sync_date = page_result.properties[LAST_SYNC_NOTION];
+    let last_sync_date = page_result.properties[NOTION.lastSync];
     last_sync_date = last_sync_date.date ? last_sync_date.date.start : 0;
 
     return new Date(last_sync_date) < new Date(page_result.last_edited_time);
@@ -852,7 +855,7 @@ function createEvent(page, event, calendar_name) {
         return false;
     }
 
-    let properties = getBaseNotionProperties(new_event_id, calendar_name);
+    let properties = createBasicNotionProperties(new_event_id, calendar_name);
     pushDatabaseUpdate(properties, page.id);
     return new_event_id;
 }

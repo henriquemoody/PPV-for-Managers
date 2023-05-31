@@ -2,7 +2,6 @@ const NOTION = {
     name: 'Name',
     date: 'Date',
     tags: 'Tags',
-    location: 'Location',
     description: 'Description',
 
     eventId: 'Event ID',
@@ -505,17 +504,6 @@ function convertCalendarEventToNotionProperties(event, existing_tags = []) {
         ],
     };
 
-    properties[NOTION.location] = {
-        type: 'rich_text',
-        rich_text: [
-            {
-                text: {
-                    content: convertCalendarDescriptionToNotionRichText(event.description),
-                },
-            },
-        ],
-    };
-
     if (event.start) {
         let start_time;
         let end_time;
@@ -626,9 +614,6 @@ function convertToGCalEvent(page_result) {
     let e_description = page_result.properties[NOTION.description].rich_text;
     e_description = flattenRichText(e_description);
 
-    let e_location = page_result.properties[LOCATION_NOTION].rich_text;
-    e_location = flattenRichText(e_location);
-
     let dates = page_result.properties[NOTION.date];
 
     if (dates.date) {
@@ -652,7 +637,6 @@ function convertToGCalEvent(page_result) {
             ...(e_id && { id: e_id }),
             ...(e_summary && { summary: e_summary }),
             ...(e_description && { description: e_description }),
-            ...(e_location && { location: e_location }),
             ...(dates.date.start && { start: dates.date.start }),
             ...(dates.date.end && { end: dates.date.end }),
             all_day: all_day,
@@ -818,7 +802,6 @@ function flattenRichText(rich_text_result) {
 function createEvent(page, event, calendar_name) {
     event.summary = event.summary || '';
     event.description = event.description || '';
-    event.location = event.location || '';
 
     let calendar_id = CALENDAR_IDS[calendar_name];
     let options = [event.summary, new Date(event.start)];
@@ -832,7 +815,7 @@ function createEvent(page, event, calendar_name) {
         options.push(new Date(event.end));
     }
 
-    options.push({ description: event.description, location: event.location });
+    options.push({ description: event.description });
 
     let calendar = CalendarApp.getCalendarById(calendar_id);
     try {
@@ -863,7 +846,6 @@ function createEvent(page, event, calendar_name) {
 function pushEventUpdate(event, event_id, calendar_id) {
     event.summary = event.summary || '';
     event.description = event.description || '';
-    event.location = event.location || '';
 
     try {
         let calendar = CalendarApp.getCalendarById(calendar_id);
@@ -871,7 +853,6 @@ function pushEventUpdate(event, event_id, calendar_id) {
 
         cal_event.setDescription(event.description);
         cal_event.setTitle(event.summary);
-        cal_event.setLocation(event.location);
 
         if (event.end && event.all_day) {
             // all day, multi day

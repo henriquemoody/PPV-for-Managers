@@ -4,13 +4,13 @@ about: Create a report to help us improve
 title: ''
 labels: bug
 assignees: ''
-
 ---
 
-*Make Sure You Are On The Latest **Main Branch** Version Before Reporting A Bug!!!*
+_Make Sure You Are On The Latest **Main Branch** Version Before Reporting A Bug!!!_
 
 **Include the following information: **
-- Date of latest commit for the version of main.js you are using. (Top right corner above the code itself) [E.g. Jan 23]
+
+-   Date of latest commit for the version of main.js you are using. (Top right corner above the code itself) [E.g. Jan 23]
 
 **Describe the bug**
 A clear and concise description of what the bug is.

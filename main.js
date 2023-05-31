@@ -343,10 +343,6 @@ function createDatabaseEntry(event) {
 
     payload['properties'] = convertCalendarEventToNotionProperties(event);
 
-    if (!checkNotionProperty(payload['properties'])) {
-        throw new InvalidEventError('Invalid Notion property structure');
-    }
-
     let options = {
         url: url,
         method: 'POST',
@@ -355,22 +351,6 @@ function createDatabaseEntry(event) {
         payload: JSON.stringify(payload),
     };
     return options;
-}
-
-/**
- * Checks if the properties are valid for Notion
- *
- * @param {*} properties Properties object to check
- * @returns false if invalid, true if valid
- */
-function checkNotionProperty(properties) {
-    // Check if description is too long
-    if (properties[NOTION.description].rich_text[0].text.content.length > 2000) {
-        console.log('Event description is too long.');
-        return false;
-    }
-
-    return true;
 }
 
 /**
@@ -491,6 +471,20 @@ function getRelativeDate(daysOffset, hour) {
     return date;
 }
 
+function convertCalendarDescriptionToNotionRichText(description) {
+    if (!description) {
+        return '';
+    }
+
+    const filteredDescription = description.replace(/<br\/>/g, ' | ');
+
+    if (filteredDescription.length <= 2000) {
+        return filteredDescription;
+    }
+
+    return filteredDescription.substring(0, 2000);
+}
+
 /**
  * Return notion JSON property object based on event data
  * @param {CalendarEvent} event modified GCal event object
@@ -516,7 +510,7 @@ function convertCalendarEventToNotionProperties(event, existing_tags = []) {
         rich_text: [
             {
                 text: {
-                    content: event.location || '',
+                    content: convertCalendarDescriptionToNotionRichText(event.description),
                 },
             },
         ],

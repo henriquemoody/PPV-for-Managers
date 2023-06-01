@@ -200,6 +200,15 @@ function parseEvents(events, ignored_eIds) {
     let requests = [];
     for (let i = 0; i < events.items.length; i++) {
         let event = events.items[i];
+        if (
+            event.eventType == 'outOfOffice' ||
+            event.summary == 'Innovation: Check-in' ||
+            event.summary == 'Innovation: Focus time'
+        ) {
+            console.log('[+ND] Skipping event %s', event.id);
+            continue;
+        }
+
         event['c_name'] = events['c_name'];
         if (ignored_eIds.has(event.id)) {
             console.log('[+ND] Ignoring event %s', event.id);
@@ -467,18 +476,23 @@ function getRelativeDate(daysOffset, hour) {
     return date;
 }
 
-function convertCalendarDescriptionToNotionRichText(description) {
-    if (!description) {
+function convertCalendarDescriptionToNotionRichText(input) {
+    if (!input) {
         return '';
     }
 
-    const filteredDescription = description.replace(/<br\/>/g, ' | ');
+    // Replace "<br/>" with " | "
+    var step1 = input.replace(/<br\/>/g, ' | ');
 
-    if (filteredDescription.length <= 2000) {
-        return filteredDescription;
+    // Strip HTML tags
+    var step2 = step1.replace(/<[^>]+>/g, '');
+
+    // Add "..." if the string is longer than 250 characters
+    if (step2.length <= 250) {
+        return step2;
     }
 
-    return filteredDescription.substring(0, 2000);
+    return step2.substring(0, 247) + '...';
 }
 
 /**
@@ -495,7 +509,7 @@ function convertCalendarEventToNotionProperties(event, existing_tags = []) {
         rich_text: [
             {
                 text: {
-                    content: event.description || '',
+                    content: convertCalendarDescriptionToNotionRichText(event.description),
                 },
             },
         ],
@@ -610,9 +624,6 @@ function convertToGCalEvent(page_result) {
     let e_summary = page_result.properties[NOTION.name].title;
     e_summary = flattenRichText(e_summary);
 
-    let e_description = page_result.properties[NOTION.quickNote].rich_text;
-    e_description = flattenRichText(e_description);
-
     let dates = page_result.properties[NOTION.doDate];
 
     if (dates.date) {
@@ -635,7 +646,6 @@ function convertToGCalEvent(page_result) {
         let event = {
             ...(e_id && { id: e_id }),
             ...(e_summary && { summary: e_summary }),
-            ...(e_description && { description: e_description }),
             ...(dates.date.start && { start: dates.date.start }),
             ...(dates.date.end && { end: dates.date.end }),
             all_day: all_day,

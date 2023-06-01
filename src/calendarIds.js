@@ -1,3 +1,3 @@
-const CALENDAR_IDS = {
+export const CALENDAR_IDS = {
     ['Personal']: 'henriquemoody@gmail.com',
 };

@@ -1,3 +1,6 @@
+import {CALENDAR_IDS} from './calendarIds';
+
+// @ts-ignore
 const NOTION = {
     actionItem: 'Action Item',
     doDate: 'Do Date',
@@ -25,8 +28,11 @@ const CANCELLED_TAG_NAME = 'Cancelled/Removed';
 const IGNORE_SYNC_TAG_NAME = 'Ignore Sync';
 
 // Relative to the time of last full sync in days.
-const RELATIVE_MIN_DAY = 0;
 const RELATIVE_MAX_DAY = 15;
+const RELATIVE_MIN_DAY = 0;
+
+let NOTION_TOKEN;
+let DATABASE_ID;
 
 function main() {
     parseNotionProperties();
@@ -669,6 +675,7 @@ function parseNotionProperties() {
         /^(([^@:\/\s]+):\/?)?\/?(([^@:\/\s]+)(:([^@:\/\s]+))?@)?([^@:\/\s]+)(:(\d+))?(((\/\w+)*\/)([\w\-\.]+[^#?\s]*)?(.*)?(#[\w\-]+)?)?$/;
 
     let database_url = properties.getProperty('DATABASE_ID').match(reURLInformation);
+
     DATABASE_ID = database_url[13];
 }
 
@@ -834,8 +841,7 @@ function createEvent(page, event, calendar_name) {
     let calendar = CalendarApp.getCalendarById(calendar_id);
     try {
         let new_event = event.all_day ? calendar.createAllDayEvent(...options) : calendar.createEvent(...options);
-
-        new_event_id = new_event.getId().split('@')[0];
+        let new_event_id = new_event.getId().split('@')[0];
     } catch (e) {
         console.log('Failed to push new event to GCal. %s', e);
         return false;

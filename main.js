@@ -1,7 +1,8 @@
 const NOTION = {
     name: 'Name',
     date: 'Date',
-    tags: 'Tags',
+    status: 'Status',
+    priority: 'Priority',
     description: 'Description',
 
     eventId: 'Event ID',
@@ -9,6 +10,11 @@ const NOTION = {
     calendarId: 'Calendar ID',
     lastSync: 'Last Sync',
 };
+
+const STATUS_ACTIVE = 'Active';
+const STATUS_CANCELED = 'Canceled';
+
+const PRIORITY_SCHEDULED = 'Scheduled';
 
 const ARCHIVE_CANCELLED_EVENTS = true;
 const DELETE_CANCELLED_EVENTS = true;
@@ -65,9 +71,9 @@ function syncToGCal() {
     const payload = {
         sorts: [{ timestamp: 'last_edited_time', direction: 'descending' }],
         filter: {
-            property: NOTION.tags,
-            multi_select: {
-                does_not_contain: IGNORE_SYNC_TAG_NAME,
+            property: NOTION.priority,
+            select: {
+                equals: PRIORITY_SCHEDULED,
             },
         },
     };
@@ -233,8 +239,7 @@ function parseEvents(events, ignored_eIds) {
                 event.id,
                 page_response.id
             );
-            let tags = page_response.properties[NOTION.tags].multi_select;
-            requests.push(updateDatabaseEntry(event, page_response.id, tags || []));
+            requests.push(updateDatabaseEntry(event, page_response.id));
 
             continue;
         }
@@ -495,6 +500,11 @@ function convertCalendarEventToNotionProperties(event, existing_tags = []) {
             },
         ],
     };
+    properties[NOTION.status] = {
+        select: {
+            name: event.status === 'cancelled' ? STATUS_CANCELED : STATUS_ACTIVE,
+        },
+    };
 
     if (event.start) {
         let start_time;
@@ -543,14 +553,6 @@ function convertCalendarEventToNotionProperties(event, existing_tags = []) {
         };
     }
 
-    if (event.status === 'cancelled') {
-        properties[NOTION.tags] = { multi_select: existing_tags };
-
-        properties[NOTION.tags].multi_select.push({
-            name: CANCELLED_TAG_NAME,
-        });
-    }
-
     return properties;
 }
 
@@ -586,6 +588,11 @@ function createBasicNotionProperties(event_id, calendar_name) {
         [NOTION.calendarName]: {
             select: {
                 name: calendar_name,
+            },
+        },
+        [NOTION.priority]: {
+            select: {
+                name: PRIORITY_SCHEDULED,
             },
         },
     };
@@ -662,15 +669,10 @@ function getPageId(event) {
     const url = getDatabaseURL();
     const payload = {
         filter: {
-            and: [
-                { property: NOTION.eventId, rich_text: { equals: event.id } },
-                {
-                    property: NOTION.tags,
-                    multi_select: {
-                        does_not_contain: IGNORE_SYNC_TAG_NAME,
-                    },
-                },
-            ],
+            property: NOTION.eventId,
+            rich_text: {
+                equals: event.id,
+            },
         },
     };
 
@@ -709,11 +711,20 @@ function deleteCancelledEvents() {
     const url = getDatabaseURL();
     const payload = {
         filter: {
-            property: NOTION.tags,
-            multi_select: {
-                contains: CANCELLED_TAG_NAME,
-                does_not_contain: IGNORE_SYNC_TAG_NAME,
-            },
+            and: [
+                {
+                    property: NOTION.status,
+                    select: {
+                        equals: STATUS_CANCELED,
+                    },
+                },
+                {
+                    property: NOTION.priority,
+                    select: {
+                        equals: PRIORITY_SCHEDULED,
+                    },
+                },
+            ],
         },
     };
     const response_data = notionFetch(url, payload, 'POST');

@@ -1,6 +1,6 @@
 const NOTION = {
     name: 'Name',
-    date: 'Date',
+    doDate: 'Do Date',
     status: 'Status',
     priority: 'Priority',
     description: 'Description',
@@ -532,7 +532,7 @@ function convertCalendarEventToNotionProperties(event, existing_tags = []) {
             end_time = event.end.dateTime;
         }
 
-        properties[NOTION.date] = {
+        properties[NOTION.doDate] = {
             type: 'date',
             date: {
                 start: start_time,
@@ -613,7 +613,7 @@ function convertToGCalEvent(page_result) {
     let e_description = page_result.properties[NOTION.description].rich_text;
     e_description = flattenRichText(e_description);
 
-    let dates = page_result.properties[NOTION.date];
+    let dates = page_result.properties[NOTION.doDate];
 
     if (dates.date) {
         let all_day = dates.date.end === null;

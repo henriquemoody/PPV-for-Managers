@@ -152,6 +152,7 @@ function syncFromGCal(c_name, fullSync, ignored_eIds) {
     let properties = PropertiesService.getUserProperties();
     let options = {
         maxResults: 100,
+        showDeleted: true,
         singleEvents: true, // allow recurring events,
         timeMin: getRelativeDate(-RELATIVE_MIN_DAY, 0).toISOString(),
         timeMax: getRelativeDate(RELATIVE_MAX_DAY, 0).toISOString(),

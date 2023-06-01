@@ -25,7 +25,7 @@ const CANCELLED_TAG_NAME = 'Cancelled/Removed';
 const IGNORE_SYNC_TAG_NAME = 'Ignore Sync';
 
 // Relative to the time of last full sync in days.
-const RELATIVE_MAX_DAY = 15;
+const RELATIVE_MAX_DAY = 1;
 const RELATIVE_MIN_DAY = 15;
 
 function main() {

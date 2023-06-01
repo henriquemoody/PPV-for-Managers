@@ -1,5 +1,5 @@
 const NOTION = {
-    name: 'Name',
+    actionItem: 'Action Item',
     doDate: 'Do Date',
     status: 'Status',
     priority: 'Priority',
@@ -555,7 +555,7 @@ function convertCalendarEventToNotionProperties(event, existing_tags = []) {
             },
         };
 
-        properties[NOTION.name] = {
+        properties[NOTION.actionItem] = {
             type: 'title',
             title: [
                 {
@@ -622,7 +622,7 @@ function convertToGCalEvent(page_result) {
     let e_id = page_result.properties[NOTION.eventId].rich_text;
     e_id = flattenRichText(e_id);
 
-    let e_summary = page_result.properties[NOTION.name].title;
+    let e_summary = page_result.properties[NOTION.actionItem].title;
     e_summary = flattenRichText(e_summary);
 
     let dates = page_result.properties[NOTION.doDate];

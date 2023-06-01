@@ -69,7 +69,7 @@ function syncToGCal() {
     // Get 100 pages in order of when they were last edited.
     const url = getDatabaseURL();
     const payload = {
-        sorts: [{ timestamp: 'last_edited_time', direction: 'descending' }],
+        sorts: [{timestamp: 'last_edited_time', direction: 'descending'}],
         filter: {
             property: NOTION.priority,
             select: {
@@ -369,14 +369,14 @@ function getPageFromEvent(event, on_before_date = null) {
     const url = getDatabaseURL();
     let payload = {
         filter: {
-            and: [{ property: NOTION.eventId, rich_text: { equals: event.id } }],
+            and: [{property: NOTION.eventId, rich_text: {equals: event.id}}],
         },
     };
 
     if (on_before_date) {
         payload['filter']['and'].push({
             property: NOTION.lastSync,
-            date: { on_or_before: new Date().toISOString(on_before_date) },
+            date: {on_or_before: new Date().toISOString(on_before_date)},
         });
     }
 
@@ -430,7 +430,7 @@ function notionFetch(url, payload_dict, method = 'POST') {
         method: method,
         headers: getNotionHeaders(),
         muteHttpExceptions: true,
-        ...(payload_dict && { payload: JSON.stringify(payload_dict) }),
+        ...(payload_dict && {payload: JSON.stringify(payload_dict)}),
     };
 
     const response = UrlFetchApp.fetch(url, options);
@@ -645,10 +645,10 @@ function convertToGCalEvent(page_result) {
         }
 
         let event = {
-            ...(e_id && { id: e_id }),
-            ...(e_summary && { summary: e_summary }),
-            ...(dates.date.start && { start: dates.date.start }),
-            ...(dates.date.end && { end: dates.date.end }),
+            ...(e_id && {id: e_id}),
+            ...(e_summary && {summary: e_summary}),
+            ...(dates.date.start && {start: dates.date.start}),
+            ...(dates.date.end && {end: dates.date.end}),
             all_day: all_day,
         };
 
@@ -829,7 +829,7 @@ function createEvent(page, event, calendar_name) {
         options.push(new Date(event.end));
     }
 
-    options.push({ description: event.description });
+    options.push({description: event.description});
 
     let calendar = CalendarApp.getCalendarById(calendar_id);
     try {

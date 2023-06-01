@@ -146,18 +146,10 @@ function syncFromGCal(c_name, fullSync, ignored_eIds) {
     let properties = PropertiesService.getUserProperties();
     let options = {
         maxResults: 100,
-        singleEvents: true, // allow recurring events
+        singleEvents: true, // allow recurring events,
+        timeMin: getRelativeDate(-RELATIVE_MIN_DAY, 0).toISOString(),
+        timeMax: getRelativeDate(RELATIVE_MAX_DAY, 0).toISOString(),
     };
-    let syncToken = properties.getProperty('syncToken');
-
-    if (syncToken && !fullSync) {
-        options.syncToken = syncToken;
-    } else {
-        // Sync events up to thirty days in the past.
-        options.timeMin = getRelativeDate(-RELATIVE_MIN_DAY, 0).toISOString();
-        // Sync events up to x days in the future.
-        options.timeMax = getRelativeDate(RELATIVE_MAX_DAY, 0).toISOString();
-    }
 
     // Retrieve events one page at a time.
     let events;

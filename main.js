@@ -3,7 +3,7 @@ const NOTION = {
     doDate: 'Do Date',
     status: 'Status',
     priority: 'Priority',
-    description: 'Description',
+    quickNote: 'Quick Note',
 
     eventId: 'Event ID',
     calendarName: 'Calendar',
@@ -490,7 +490,7 @@ function convertCalendarDescriptionToNotionRichText(description) {
 function convertCalendarEventToNotionProperties(event, existing_tags = []) {
     let properties = createBasicNotionProperties(event.id, event.c_name);
 
-    properties[NOTION.description] = {
+    properties[NOTION.quickNote] = {
         type: 'rich_text',
         rich_text: [
             {
@@ -610,7 +610,7 @@ function convertToGCalEvent(page_result) {
     let e_summary = page_result.properties[NOTION.name].title;
     e_summary = flattenRichText(e_summary);
 
-    let e_description = page_result.properties[NOTION.description].rich_text;
+    let e_description = page_result.properties[NOTION.quickNote].rich_text;
     e_description = flattenRichText(e_description);
 
     let dates = page_result.properties[NOTION.doDate];

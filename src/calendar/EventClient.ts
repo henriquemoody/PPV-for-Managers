@@ -83,7 +83,7 @@ export default class EventClient {
         }
 
         Logger.info('Creating on Calendar => %s', event.toString());
-        // this.create(event);
+        this.create(event);
     }
 
     private create(event: Event): void {

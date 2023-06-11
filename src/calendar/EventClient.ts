@@ -97,10 +97,8 @@ export default class EventClient {
             return;
         }
 
-        const endDate = new Date(event.end);
-        endDate.setDate(endDate.getDate() + 1);
+        const createdEvent = calendar.createAllDayEvent(event.summary, event.start, event.end, options);
 
-        const createdEvent = calendar.createAllDayEvent(event.summary, event.start, endDate, options);
         event.updateId(createdEvent.getId());
 
         this.modifiedEventIds.add(event.id);
@@ -109,16 +107,13 @@ export default class EventClient {
     private update(event: Event): void {
         const calendarEvent = CalendarApp.getCalendarById(event.calendarId).getEventById(event.id);
 
-        calendarEvent.setTitle(event.summary);
+        this.modifiedEventIds.add(event.id);
 
+        calendarEvent.setTitle(event.summary);
         if (event.allDay) {
-            event.end.setDate(event.end.getDate() + 2);
             calendarEvent.setAllDayDates(event.start, event.end);
             return;
         }
-
         calendarEvent.setTime(event.start, event.end);
-
-        this.modifiedEventIds.add(event.id);
     }
 }

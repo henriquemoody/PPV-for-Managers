@@ -39,7 +39,7 @@ export default class Event {
         let end: Date;
         if (allDay) {
             start = new Date(calendarEvent.start.date + 'T00:00:00');
-            end = new Date(calendarEvent.end.date + 'T00:00:00');
+            end = calendarEvent.end.date ? new Date(calendarEvent.end.date + 'T00:00:00') : start;
         } else {
             start = new Date(calendarEvent.start.dateTime);
             end = new Date(calendarEvent.end.dateTime);

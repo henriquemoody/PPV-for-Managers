@@ -130,6 +130,11 @@ function deleteCancelledEvents() {
     for (const result in results) {
         const task = Notion.Task.Page.createFromResult(results[result]);
         const event = calendarClient.get(task.calendarId, task.eventId);
+        if (!event) {
+            Logger.debug('Could not task in Calendar => %s', task.toString());
+            continue;
+        }
+
         if (event.isCanceled()) {
             Logger.debug('Ignoring already cancelled event => %s', task.toString());
             continue;
@@ -199,9 +204,15 @@ function createEventFromTaskPage(taskPage: Notion.Task.Page): Calendar.Event {
         allDay = true;
     }
 
-    if (end.length === 10) {
+    if (end && end.length === 10) {
         end += 'T00:00:00';
         allDay = true;
+    }
+
+    if (!end && allDay) {
+        const endDate = new Date(start);
+        endDate.setDate(endDate.getDate() + 1);
+        end = DateFormatter.date(endDate) + 'T00:00:00';
     }
 
     const event = new Calendar.Event(

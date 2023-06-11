@@ -20,7 +20,7 @@ export default class EventClient {
 
     get(calendar: string, eventId: string): Event | null {
         try {
-            return Event.create(calendar, Calendar.Events.get(CALENDAR_IDS[calendar], eventId));
+            return Event.createCalendarAndEvent(calendar, Calendar.Events.get(CALENDAR_IDS[calendar], eventId));
         } catch (error) {
             Logger.warn('Failed to get event "%s" from "%s"', eventId, calendar);
             Logger.warn(error.message);
@@ -48,7 +48,7 @@ export default class EventClient {
             }
 
             for (let i = 0; i < batchOfEvents.items.length; i++) {
-                let event = Event.create(calendarName, batchOfEvents.items[i]);
+                let event = Event.createCalendarAndEvent(calendarName, batchOfEvents.items[i]);
                 if (!event.isSynchronizable()) {
                     Logger.debug('Ignoring because it is not allowed to sync => "%s" (%s [%s])', event.getReference());
                     continue;

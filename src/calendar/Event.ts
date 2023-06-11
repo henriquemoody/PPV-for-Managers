@@ -36,7 +36,7 @@ export default class Event {
         this.description = description;
     }
 
-    static create(calendar: string, calendarEvent: GoogleAppsScript.Calendar.Schema.Event): Event {
+    static createCalendarAndEvent(calendar: string, calendarEvent: GoogleAppsScript.Calendar.Schema.Event): Event {
         const allDay = !!calendarEvent.start.date;
         let start: Date;
         let end: Date;

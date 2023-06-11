@@ -99,7 +99,17 @@ export default class Event {
     }
 
     getReference() {
-        return Utilities.formatString('%s [%s - %s]', this.summary, this.start, this.end);
+        let template = '%s (%s)';
+        if (this.isCanceled()) {
+            template = '%s (canceled %s)';
+        }
+
+        return Utilities.formatString(
+            template,
+            this.summary,
+            DateFormatter.dateTime(this.start),
+            DateFormatter.dateTime(this.end)
+        );
     }
 
     updateId(id: string) {

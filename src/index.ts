@@ -68,6 +68,8 @@ function syncNotionToCalendar() {
         const eventFromCalendar = calendarClient.get(task.calendar, task.eventId);
         if (!eventFromCalendar) {
             calendarClient.save(eventFromTask);
+            task.eventId = eventFromTask.id;
+            notionClient.save(task);
             continue;
         }
 
@@ -85,7 +87,6 @@ function syncNotionToCalendar() {
         Logger.debug('eventFromCalendar', JSON.stringify(eventFromCalendar));
 
         eventFromCalendar.merge(eventFromTask);
-
         calendarClient.save(eventFromCalendar);
     }
 }

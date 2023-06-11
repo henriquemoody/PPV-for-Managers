@@ -1,7 +1,6 @@
 import {CALENDAR_IDS} from '../config';
 
 import DateFormatter from '../helpers/DateFormatter';
-import Logger from '../helpers/Logger';
 import TaskPage from '../notion/Task/TaskPage';
 import {Status} from '../notion/enums';
 

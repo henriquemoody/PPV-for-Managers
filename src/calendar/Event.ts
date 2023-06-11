@@ -66,16 +66,17 @@ export default class Event {
     }
 
     toString() {
-        let template = '%s (%s)';
+        let template = '%s (%s - %s) [%s]';
         if (this.isCanceled()) {
-            template = '%s (canceled %s)';
+            template = '%s (canceled %s - %s) [%s]';
         }
 
         return Utilities.formatString(
             template,
             this.summary,
             DateFormatter.dateTime(this.start),
-            DateFormatter.dateTime(this.end)
+            DateFormatter.dateTime(this.end),
+            this.calendar
         );
     }
 

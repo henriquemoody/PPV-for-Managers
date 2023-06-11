@@ -2,6 +2,7 @@ import {ARCHIVE_CANCELLED_EVENTS, CALENDAR_IDS, DELETE_CANCELLED_EVENTS, UPDATE_
 
 import * as Calendar from './calendar';
 import * as Notion from './notion';
+import DateFormatter from './helpers/DateFormatter';
 import Logger from './helpers/Logger';
 
 const notionClient = new Notion.Client();
@@ -63,7 +64,7 @@ function syncNotionToCalendar() {
             continue;
         }
 
-        const eventFromTask = Calendar.Event.createFromTask(task);
+        const eventFromTask = createEventFromTaskPage(task);
         const eventFromCalendar = calendarClient.get(task.calendar, task.eventId);
         if (!eventFromCalendar) {
             calendarClient.save(eventFromTask);
@@ -92,7 +93,7 @@ function syncNotionToCalendar() {
 function syncCalendarToNotion(calendarName: string) {
     Logger.info('Synchronizing "%s" Calendar to Notion', calendarName);
     calendarClient.getAll(calendarName).forEach((event: Calendar.Event) => {
-        const taskFromEvent = Notion.Task.Page.createFromEvent(event);
+        const taskFromEvent = createTaskPageFromEvent(event);
         const result = notionClient.queryOne(new Notion.Task.FromCalendarEventQuery(event.id));
 
         if (result !== null) {
@@ -139,4 +140,80 @@ function deleteCancelledEvents() {
             notionClient.save(task);
         }
     }
+}
+
+function createTaskPageFromEvent(event: Calendar.Event): Notion.Task.Page {
+    const formatDescription = (description: string): string | null => {
+        if (!description) {
+            return null;
+        }
+
+        const formatted = description
+            .replace(/<br\/?>/g, '\n')
+            .replace(/\s+/g, ' ')
+            .replace(/<[^>]+>/g, '')
+            .trim();
+        if (formatted.length <= 250) {
+            return formatted;
+        }
+
+        return formatted.substring(0, 247) + '...';
+    };
+
+    let start;
+    let end;
+
+    if (event.allDay) {
+        let endDate = new Date(event.end);
+        endDate.setDate(endDate.getDate() - 1);
+
+        start = DateFormatter.date(new Date(event.start));
+        end = DateFormatter.date(endDate);
+
+        end = start === end ? null : end;
+    } else {
+        start = DateFormatter.dateTime(new Date(event.start));
+        end = DateFormatter.dateTime(new Date(event.end));
+    }
+
+    return new Notion.Task.Page(
+        event.summary || '',
+        formatDescription(event.description) || null,
+        event.status === 'cancelled' ? Notion.Enum.Status.CANCELED : Notion.Enum.Status.ACTIVE,
+        Notion.Enum.Priority.SCHEDULED,
+        start,
+        end || null,
+        event.id,
+        event.calendar
+    );
+}
+
+function createEventFromTaskPage(taskPage: Notion.Task.Page): Calendar.Event {
+    let allDay = false;
+    let start = taskPage.start;
+    let end = taskPage.end;
+
+    if (start.length === 10) {
+        start += 'T00:00:00';
+        allDay = true;
+    }
+
+    if (end.length === 10) {
+        end += 'T00:00:00';
+        allDay = true;
+    }
+
+    const event = new Calendar.Event(
+        taskPage.calendar,
+        allDay,
+        new Date(start),
+        new Date(end),
+        'default',
+        taskPage.status === Notion.Enum.Status.CANCELED ? 'cancelled' : 'confirmed',
+        taskPage.title,
+        taskPage.quickNote
+    );
+    event.id = taskPage.eventId;
+
+    return event;
 }

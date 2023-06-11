@@ -1,8 +1,6 @@
 import {CALENDAR_IDS} from '../config';
 
 import DateFormatter from '../helpers/DateFormatter';
-import TaskPage from '../notion/Task/TaskPage';
-import {Status} from '../notion/enums';
 
 export default class Event {
     public id?: string;
@@ -59,36 +57,6 @@ export default class Event {
             calendarEvent.description || null
         );
         event.updateId(calendarEvent.id);
-
-        return event;
-    }
-
-    static createFromTask(task: TaskPage) {
-        let allDay = false;
-        let start = task.start;
-        let end = task.end;
-
-        if (start.length === 10) {
-            start += 'T00:00:00';
-            allDay = true;
-        }
-
-        if (end.length === 10) {
-            end += 'T00:00:00';
-            allDay = true;
-        }
-
-        const event = new Event(
-            task.calendar,
-            allDay,
-            new Date(start),
-            new Date(end),
-            'default',
-            task.status === Status.CANCELED ? 'cancelled' : 'confirmed',
-            task.title,
-            task.quickNote
-        );
-        event.id = task.eventId;
 
         return event;
     }

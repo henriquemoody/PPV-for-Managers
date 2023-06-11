@@ -5,26 +5,8 @@ import Formatter from '../Formatter';
 import Page from '../Page';
 import PropertiesBuilder from '../PropertiesBuilder';
 import TaskMap from './TaskMap';
-import {Event} from '../../calendar';
-import {Priority, Status} from '../enums';
+import {Status} from '../enums';
 import {Result} from '../types';
-
-function formatCalendarDescription(description: string): string | null {
-    if (!description) {
-        return null;
-    }
-
-    const formatted = description
-        .replace(/<br\/?>/g, '\n')
-        .replace(/\s+/g, ' ')
-        .replace(/<[^>]+>/g, '')
-        .trim();
-    if (formatted.length <= 250) {
-        return formatted;
-    }
-
-    return formatted.substring(0, 247) + '...';
-}
 
 export default class TaskPage extends Page {
     public eventId?: string;
@@ -79,35 +61,6 @@ export default class TaskPage extends Page {
         taskPage.projects = Formatter.relation(result.properties[TaskMap.projects]);
 
         return taskPage;
-    }
-
-    static createFromEvent(event: Event): TaskPage {
-        let start;
-        let end;
-
-        if (event.allDay) {
-            let endDate = new Date(event.end);
-            endDate.setDate(endDate.getDate() - 1);
-
-            start = DateFormatter.date(new Date(event.start));
-            end = DateFormatter.date(endDate);
-
-            end = start === end ? null : end;
-        } else {
-            start = DateFormatter.dateTime(new Date(event.start));
-            end = DateFormatter.dateTime(new Date(event.end));
-        }
-
-        return new TaskPage(
-            event.summary || '',
-            formatCalendarDescription(event.description) || null,
-            event.status === 'cancelled' ? Status.CANCELED : Status.ACTIVE,
-            Priority.SCHEDULED,
-            start,
-            end || null,
-            event.id,
-            event.calendar
-        );
     }
 
     get calendarId(): string {

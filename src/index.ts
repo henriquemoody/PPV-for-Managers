@@ -71,7 +71,7 @@ function syncNotionToCalendar() {
             continue;
         }
 
-        if (eventFromTask.isCanceled()) {
+        if (eventFromCalendar.isCanceled()) {
             Logger.debug('Ignoring cancelled event => %s', task.toString());
             continue;
         }

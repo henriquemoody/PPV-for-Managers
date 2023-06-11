@@ -21,7 +21,7 @@ export const DATE_TIMEZONE = 'CET';
 
 export const ARCHIVE_CANCELLED_EVENTS = true;
 export const DELETE_CANCELLED_EVENTS = true;
-export const UPDATE_CHANGED_EVENTS = false;
+export const UPDATE_CHANGED_EVENTS = true;
 
 export const RELATIVE_MAX_DAY = 15;
 export const RELATIVE_MIN_DAY = 0;

@@ -97,7 +97,7 @@ export default class Event {
         return CALENDAR_IDS[this.calendar];
     }
 
-    getReference() {
+    toString() {
         let template = '%s (%s)';
         if (this.isCanceled()) {
             template = '%s (canceled %s)';

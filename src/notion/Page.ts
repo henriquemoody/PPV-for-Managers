@@ -16,7 +16,7 @@ export default abstract class Page {
         return this._databaseId;
     }
 
-    getReference(): string {
+    toString(): string {
         if (this.isArchived()) {
             return Utilities.formatString('%s (archived %s)', this.title, this.constructor.name);
         }

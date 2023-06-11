@@ -54,12 +54,12 @@ function syncNotionToCalendar() {
         }
 
         if (task.lastSyncTime && new Date(task.lastEditedTime) > new Date(task.lastSyncTime)) {
-            Logger.debug('No changes made since last sync => %s', task.getReference());
+            Logger.debug('No changes made since last sync => %s', task.toString());
             continue;
         }
 
         if (new Date(task.start) < today) {
-            Logger.debug('Ignoring past event => %s', task.getReference());
+            Logger.debug('Ignoring past event => %s', task.toString());
             continue;
         }
 
@@ -71,12 +71,12 @@ function syncNotionToCalendar() {
         }
 
         if (eventFromTask.isCanceled()) {
-            Logger.debug('Ignoring cancelled event => %s', task.getReference());
+            Logger.debug('Ignoring cancelled event => %s', task.toString());
             continue;
         }
 
         if (eventFromCalendar.isUpToDate(eventFromTask)) {
-            Logger.debug('Skipping up-to-dated => %s', task.getReference());
+            Logger.debug('Skipping up-to-dated => %s', task.toString());
             continue;
         }
 
@@ -99,7 +99,7 @@ function syncCalendarToNotion(calendarName: string) {
             const taskFromResult = Notion.Task.Page.createFromResult(result);
             taskFromEvent.merge(taskFromResult);
             if (taskFromResult.isUpToDate(taskFromEvent)) {
-                Logger.debug('Skipping up-to-dated => %s', taskFromResult.getReference());
+                Logger.debug('Skipping up-to-dated => %s', taskFromResult.toString());
                 return;
             }
             Logger.debug('Calendar', taskFromEvent);
@@ -110,7 +110,7 @@ function syncCalendarToNotion(calendarName: string) {
         }
 
         if (taskFromEvent.isArchived()) {
-            Logger.debug('Skipping canceled and absent in Notion => %s', taskFromEvent.getReference());
+            Logger.debug('Skipping canceled and absent in Notion => %s', taskFromEvent.toString());
             return;
         }
 
@@ -129,7 +129,7 @@ function deleteCancelledEvents() {
         const task = Notion.Task.Page.createFromResult(results[result]);
         const event = calendarClient.get(task.calendarId, task.eventId);
         if (event.isCanceled()) {
-            Logger.debug('Ignoring already cancelled event => %s', task.getReference());
+            Logger.debug('Ignoring already cancelled event => %s', task.toString());
             continue;
         }
 

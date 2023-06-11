@@ -20,23 +20,23 @@ export default class Client {
 
     save(page: Page): void {
         if (page.id) {
-            Logger.info('Updating on Notion => %s', page.getReference());
+            Logger.info('Updating on Notion => %s', page.toString());
             UrlFetchApp.fetch(PAGE_URL + '/' + page.id, this.buildUpdateRequestOptions(page));
             return;
         }
 
-        Logger.info('Creating on Notion => %s', page.getReference());
+        Logger.info('Creating on Notion => %s', page.toString());
         UrlFetchApp.fetch(PAGE_URL, this.buildCreateRequestOptions(page));
     }
 
     lazySave(page: Page): void {
         if (page.id) {
-            Logger.info('Updating on Notion [lazy] => %s', page.getReference());
+            Logger.info('Updating on Notion [lazy] => %s', page.toString());
             this.requests.push(this.buildUpdateRequest(page));
             return;
         }
 
-        Logger.info('Creating on Notion [lazy] => %s', page.getReference());
+        Logger.info('Creating on Notion [lazy] => %s', page.toString());
         this.requests.push(this.buildCreateRequest(page));
     }
 

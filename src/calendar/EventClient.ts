@@ -50,7 +50,7 @@ export default class EventClient {
             for (let i = 0; i < batchOfEvents.items.length; i++) {
                 let event = Event.createCalendarAndEvent(calendarName, batchOfEvents.items[i]);
                 if (!event.isSynchronizable()) {
-                    Logger.debug('Ignoring because it is not allowed to sync => "%s" (%s [%s])', event.getReference());
+                    Logger.debug('Ignoring because it is not allowed to sync => "%s" (%s [%s])', event.toString());
                     continue;
                 }
 
@@ -69,7 +69,7 @@ export default class EventClient {
     }
 
     delete(event: Event): void {
-        Logger.info('Deleting event on Calendar => %s', event.getReference());
+        Logger.info('Deleting event on Calendar => %s', event.toString());
         CalendarApp.getCalendarById(event.calendarId).getEventById(event.id).deleteEvent();
 
         this.modifiedEventIds.add(event.id);
@@ -77,12 +77,12 @@ export default class EventClient {
 
     save(event: Event): void {
         if (event.id) {
-            Logger.info('Updating on Calendar => %s', event.getReference());
+            Logger.info('Updating on Calendar => %s', event.toString());
             this.update(event);
             return;
         }
 
-        Logger.info('Creating on Calendar => %s', event.getReference());
+        Logger.info('Creating on Calendar => %s', event.toString());
         // this.create(event);
     }
 

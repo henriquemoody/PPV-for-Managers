@@ -23,7 +23,7 @@ export default class Logger {
 
     static warn(formatOrObject: object | string, ...values: any[]) {
         if (LogLevel.WARN >= LOGGER_LEVEL) {
-            console.log(formatOrObject, ...values);
+            console.warn(formatOrObject, ...values);
         }
 
         LOGS.push([LogLevel.WARN, formatOrObject, ...values]);

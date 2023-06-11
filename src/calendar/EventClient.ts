@@ -22,8 +22,8 @@ export default class EventClient {
         try {
             return Event.createCalendarAndEvent(calendar, Calendar.Events.get(CALENDAR_IDS[calendar], eventId));
         } catch (error) {
+            Logger.debug(error);
             Logger.warn('Failed to get event "%s" from "%s"', eventId, calendar);
-            Logger.warn(error.message);
             return null;
         }
     }

@@ -4,6 +4,7 @@ import * as Calendar from './calendar';
 import * as Notion from './notion';
 import DateFormatter from './helpers/DateFormatter';
 import Logger from './helpers/Logger';
+import {DailyQuery} from './notion/Schedule';
 
 const notionClient = new Notion.Client();
 const calendarClient = new Calendar.Client();
@@ -32,11 +33,25 @@ function hourly() {
 
 function daily() {
     notionClient.lazySave(Notion.Day.Page.createFromDate(today));
-    if (today.getDay() === 1) {
-        notionClient.lazySave(Notion.Week.Page.createFromDate(today));
-    }
     notionClient
-        .query(new Notion.Schedule.ByDateQuery(today))
+        .query(new Notion.Schedule.DailyQuery(today))
+        .map((result) => Notion.Schedule.Page.createFromResult(result).toTask())
+        .forEach((task) => notionClient.lazySave(task));
+    notionClient.saveAll();
+}
+
+function weekly() {
+    notionClient.lazySave(Notion.Week.Page.createFromDate(today));
+    notionClient
+        .query(new Notion.Schedule.WeeklyQuery())
+        .map((result) => Notion.Schedule.Page.createFromResult(result).toTask())
+        .forEach((task) => notionClient.lazySave(task));
+    notionClient.saveAll();
+}
+
+function monthly() {
+    notionClient
+        .query(new Notion.Schedule.MonthlyQuery())
         .map((result) => Notion.Schedule.Page.createFromResult(result).toTask())
         .forEach((task) => notionClient.lazySave(task));
     notionClient.saveAll();

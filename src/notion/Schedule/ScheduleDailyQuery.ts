@@ -5,7 +5,7 @@ import ScheduleMap from './ScheduleMap';
 import {Payload} from '../types';
 import {Schedule} from '../enums';
 
-export default class ScheduleByDateQuery implements Query {
+export default class ScheduleDailyQuery implements Query {
     private readonly date: Date;
 
     constructor(date: Date) {
@@ -18,22 +18,6 @@ export default class ScheduleByDateQuery implements Query {
 
     getPayload(): Payload {
         const schedules = [Schedule.Daily];
-        if (this.date.getDay() === 1) {
-            schedules.push(
-                Schedule.Monday,
-                Schedule.Tuesday,
-                Schedule.Wednesday,
-                Schedule.Thursday,
-                Schedule.Friday,
-                Schedule.Saturday,
-                Schedule.Sunday
-            );
-        }
-
-        if (this.date.getDate() === 1) {
-            schedules.push(Schedule.Monthly);
-        }
-
         if (this.date.getDay() > 0 && this.date.getDay() < 6) {
             schedules.push(Schedule.Weekdays);
         }

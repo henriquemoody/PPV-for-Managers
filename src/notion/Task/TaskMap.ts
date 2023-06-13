@@ -1,8 +1,9 @@
 enum TaskMap {
     title = 'Task',
     date = 'Do Date',
-    status = 'Status',
     priority = 'Priority',
+    size = 'Size',
+    status = 'Status',
     quickNote = 'Quick Note',
     pillars = 'Pillars',
     projects = 'Projects',

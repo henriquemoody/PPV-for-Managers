@@ -5,7 +5,7 @@ import Formatter from '../Formatter';
 import Page from '../Page';
 import PropertiesBuilder from '../PropertiesBuilder';
 import TaskMap from './TaskMap';
-import {Status} from '../enums';
+import {Size, Status} from '../enums';
 import {Result} from '../types';
 
 export default class TaskPage extends Page {
@@ -15,6 +15,7 @@ export default class TaskPage extends Page {
     public quickNote: string | null;
     public status: Status;
     public priority: string;
+    public size?: Size | null;
     public calendar?: string;
     public pillars: Array<string>;
     public projects: Array<string>;
@@ -26,6 +27,7 @@ export default class TaskPage extends Page {
         quickNote: string | null,
         status: Status,
         priority: string,
+        size: Size | null,
         start,
         end?,
         eventId?,
@@ -37,6 +39,7 @@ export default class TaskPage extends Page {
         this.quickNote = quickNote;
         this.status = status;
         this.priority = priority;
+        this.size = size;
         this.eventId = eventId;
         this.calendar = calendar;
         this.pillars = [];
@@ -49,6 +52,7 @@ export default class TaskPage extends Page {
             Formatter.richText(result.properties[TaskMap.quickNote]),
             <Status>Formatter.select(result.properties[TaskMap.status]),
             Formatter.select(result.properties[TaskMap.priority]),
+            <Size>Formatter.select(result.properties[TaskMap.size]),
             Formatter.dateStart(result.properties[TaskMap.date]),
             Formatter.dateEnd(result.properties[TaskMap.date]),
             Formatter.richText(result.properties[TaskMap.eventId]),
@@ -93,6 +97,9 @@ export default class TaskPage extends Page {
         builder.date(TaskMap.date, this.start, this.end);
         builder.select(TaskMap.priority, this.priority);
         builder.select(TaskMap.status, this.status);
+        if (this.size) {
+            builder.select(TaskMap.size, this.size);
+        }
 
         if (this.quickNote) {
             builder.richText(TaskMap.quickNote, this.quickNote);

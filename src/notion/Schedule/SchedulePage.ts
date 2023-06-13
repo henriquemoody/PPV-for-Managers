@@ -7,18 +7,20 @@ import PropertiesBuilder from '../PropertiesBuilder';
 import ScheduleMap from './ScheduleMap';
 import TaskPage from '../Task/TaskPage';
 import {Result} from '../types';
-import {Schedule, Status} from '../enums';
+import {Schedule, Size, Status} from '../enums';
 
 export default class SchedulePage extends Page {
     public readonly priority: string;
     public readonly pillars: Array<string>;
     public readonly projects: Array<string>;
     public readonly schedule: Schedule;
+    public readonly size: Size;
     public readonly day: number | null;
 
     private constructor(
         title: string,
         priority: string,
+        size: Size,
         pillars: string[],
         projects: string[],
         schedule: Schedule,
@@ -26,6 +28,7 @@ export default class SchedulePage extends Page {
     ) {
         super(SCHEDULES_DATABASE_ID, title);
         this.priority = priority;
+        this.size = size;
         this.pillars = pillars;
         this.projects = projects;
         this.schedule = schedule;
@@ -36,9 +39,10 @@ export default class SchedulePage extends Page {
         return new SchedulePage(
             Formatter.title(result.properties[ScheduleMap.title]),
             Formatter.select(result.properties[ScheduleMap.priority]),
+            <Size>Formatter.select(result.properties[ScheduleMap.size]),
             Formatter.relation(result.properties[ScheduleMap.pillars]),
             Formatter.relation(result.properties[ScheduleMap.projects]),
-            Schedule[Formatter.select(result.properties[ScheduleMap.schedule])],
+            <Schedule>Formatter.select(result.properties[ScheduleMap.schedule]),
             Formatter.number(result.properties[ScheduleMap.day])
         );
     }
@@ -60,7 +64,7 @@ export default class SchedulePage extends Page {
             date.setDate(date.getDate() + ((daysOfWeek[this.schedule] + 7 - date.getDay()) % 7));
         }
 
-        const task = new TaskPage(this.title, null, Status.ACTIVE, this.priority, DateFormatter.date(date));
+        const task = new TaskPage(this.title, null, Status.ACTIVE, this.priority, this.size, DateFormatter.date(date));
         task.pillars = this.pillars;
         task.projects = this.projects;
 
@@ -72,6 +76,7 @@ export default class SchedulePage extends Page {
 
         builder.title(ScheduleMap.title, this.title);
         builder.select(ScheduleMap.priority, this.priority);
+        builder.select(ScheduleMap.size, this.size);
         builder.relation(ScheduleMap.pillars, this.pillars);
         builder.relation(ScheduleMap.projects, this.projects);
         builder.select(ScheduleMap.schedule, this.schedule);

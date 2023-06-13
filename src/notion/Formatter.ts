@@ -17,8 +17,8 @@ export default class Formatter {
         return property.number;
     }
 
-    static select(property: {select: {name: string}}): string {
-        return property.select.name;
+    static select(property: {select: {name?: string}}): string | null {
+        return property.select?.name ?? null;
     }
 
     static relation(property: {relation: [{id: string}]}): string[] {

@@ -1,5 +1,3 @@
-import internal from 'stream';
-
 const properties = PropertiesService.getScriptProperties();
 
 export enum LogLevel {

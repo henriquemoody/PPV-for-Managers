@@ -1,4 +1,4 @@
-import {DRY_RUN_MODE} from '../config';
+import {DRY_RUN_MODE, NOTION_TOKEN} from '../config';
 
 import Logger from '../helpers/Logger';
 import Page from './Page';
@@ -6,7 +6,7 @@ import Query from './Query';
 import {Result} from './types';
 
 const DEFAULT_HEADERS: GoogleAppsScript.URL_Fetch.HttpHeaders = {
-    Authorization: `Bearer ${PropertiesService.getScriptProperties().getProperty('NOTION_TOKEN')}`,
+    Authorization: `Bearer ${NOTION_TOKEN}`,
     Accept: 'application/json',
     'Notion-Version': '2022-06-28',
     'Content-Type': 'application/json',

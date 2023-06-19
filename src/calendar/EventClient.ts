@@ -1,4 +1,4 @@
-import {CALENDAR_IDS, RELATIVE_MAX_DAY, RELATIVE_MIN_DAY} from '../config';
+import {CALENDAR_IDS, DRY_RUN_MODE, RELATIVE_MAX_DAY, RELATIVE_MIN_DAY} from '../config';
 
 import Event from './Event';
 import Logger from '../helpers/Logger';
@@ -70,7 +70,7 @@ export default class EventClient {
 
     delete(event: Event): void {
         Logger.info('Deleting event on Calendar => %s', event.toString());
-        CalendarApp.getCalendarById(event.calendarId).getEventById(event.id).deleteEvent();
+        !DRY_RUN_MODE && CalendarApp.getCalendarById(event.calendarId).getEventById(event.id).deleteEvent();
 
         this.modifiedEventIds.add(event.id);
     }
@@ -87,6 +87,12 @@ export default class EventClient {
     }
 
     private create(event: Event): void {
+        if (DRY_RUN_MODE) {
+            event.updateId((Math.random() + 1).toString(36).substring(2));
+            this.modifiedEventIds.add(event.id);
+            return;
+        }
+
         const calendar = CalendarApp.getCalendarById(event.calendarId);
         const options = {description: event.description};
 
@@ -105,9 +111,13 @@ export default class EventClient {
     }
 
     private update(event: Event): void {
-        const calendarEvent = CalendarApp.getCalendarById(event.calendarId).getEventById(event.id);
-
         this.modifiedEventIds.add(event.id);
+
+        if (DRY_RUN_MODE) {
+            return;
+        }
+
+        const calendarEvent = CalendarApp.getCalendarById(event.calendarId).getEventById(event.id);
 
         calendarEvent.setTitle(event.summary);
         if (event.allDay) {

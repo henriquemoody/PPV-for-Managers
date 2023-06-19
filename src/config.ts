@@ -19,6 +19,8 @@ export const LOGGER_SHOWN_AFTER_ERROR = 5;
 
 export const DATE_TIMEZONE = 'CET';
 
+export const DRY_RUN_MODE = false;
+
 export const ARCHIVE_CANCELLED_EVENTS = true;
 export const DELETE_CANCELLED_EVENTS = true;
 export const UPDATE_CHANGED_EVENTS = true;

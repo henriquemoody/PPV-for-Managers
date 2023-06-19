@@ -1,3 +1,5 @@
+import {DRY_RUN_MODE} from '../config';
+
 import Logger from '../helpers/Logger';
 import Page from './Page';
 import Query from './Query';
@@ -21,12 +23,12 @@ export default class Client {
     save(page: Page): void {
         if (page.id) {
             Logger.info('Updating on Notion => %s', page.toString());
-            UrlFetchApp.fetch(PAGE_URL + '/' + page.id, this.buildUpdateRequestOptions(page));
+            !DRY_RUN_MODE && UrlFetchApp.fetch(PAGE_URL + '/' + page.id, this.buildUpdateRequestOptions(page));
             return;
         }
 
         Logger.info('Creating on Notion => %s', page.toString());
-        UrlFetchApp.fetch(PAGE_URL, this.buildCreateRequestOptions(page));
+        !DRY_RUN_MODE && UrlFetchApp.fetch(PAGE_URL, this.buildCreateRequestOptions(page));
     }
 
     lazySave(page: Page): void {
@@ -47,6 +49,11 @@ export default class Client {
         }
 
         Logger.info('Sending batch of stacked requests => %s', this.requests.length);
+        if (DRY_RUN_MODE) {
+            this.requests.length = 0;
+            return;
+        }
+
         const responses = UrlFetchApp.fetchAll(this.requests);
         for (let i = 0; i < responses.length; i++) {
             let response = responses[i];

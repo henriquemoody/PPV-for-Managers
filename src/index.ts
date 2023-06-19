@@ -1,4 +1,10 @@
-import {ARCHIVE_CANCELLED_EVENTS, CALENDAR_IDS, DELETE_CANCELLED_EVENTS, UPDATE_CHANGED_EVENTS} from './config';
+import {
+    ARCHIVE_CANCELLED_EVENTS,
+    CALENDAR_IDS,
+    DELETE_CANCELLED_EVENTS,
+    DRY_RUN_MODE,
+    UPDATE_CHANGED_EVENTS,
+} from './config';
 
 import * as Calendar from './calendar';
 import * as Notion from './notion';
@@ -10,6 +16,8 @@ const calendarClient = new Calendar.Client();
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
+
+Logger.info('Dry run mode: %s', DRY_RUN_MODE ? 'On' : 'Off');
 
 function hourly() {
     try {

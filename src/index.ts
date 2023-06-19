@@ -17,7 +17,10 @@ const calendarClient = new Calendar.Client();
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
-Logger.info('Dry run mode: %s', DRY_RUN_MODE ? 'On' : 'Off');
+Logger.debug('DRY_RUN_MODE', DRY_RUN_MODE);
+Logger.debug('ARCHIVE_CANCELLED_EVENTS', ARCHIVE_CANCELLED_EVENTS);
+Logger.debug('DELETE_CANCELLED_EVENTS', DELETE_CANCELLED_EVENTS);
+Logger.debug('UPDATE_CHANGED_EVENTS', UPDATE_CHANGED_EVENTS);
 
 function hourly() {
     try {

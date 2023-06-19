@@ -11,6 +11,6 @@ export default class DateFormatter {
         return Utilities.formatDate(date, DATE_TIMEZONE, 'MMMM d, yyyy');
     }
     static prettyWeek(date: Date): string {
-        return 'Week ' + Utilities.formatDate(date, DATE_TIMEZONE, 'w');
+        return 'Week ' + Utilities.formatDate(date, DATE_TIMEZONE, 'w, yyyy');
     }
 }

@@ -4,7 +4,6 @@ import * as Calendar from './calendar';
 import * as Notion from './notion';
 import DateFormatter from './helpers/DateFormatter';
 import Logger from './helpers/Logger';
-import {DailyQuery} from './notion/Schedule';
 
 const notionClient = new Notion.Client();
 const calendarClient = new Calendar.Client();

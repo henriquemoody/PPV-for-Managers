@@ -13,6 +13,7 @@ export default class SchedulePage extends Page {
     public readonly priority: string;
     public readonly pillars: Array<string>;
     public readonly projects: Array<string>;
+    public readonly practices: Array<string>;
     public readonly schedule: Schedule;
     public readonly size: Size;
     public readonly day: number | null;
@@ -23,6 +24,7 @@ export default class SchedulePage extends Page {
         size: Size,
         pillars: string[],
         projects: string[],
+        practices: string[],
         schedule: Schedule,
         day: number | null
     ) {
@@ -31,6 +33,7 @@ export default class SchedulePage extends Page {
         this.size = size;
         this.pillars = pillars;
         this.projects = projects;
+        this.practices = practices;
         this.schedule = schedule;
         this.day = day;
     }
@@ -42,6 +45,7 @@ export default class SchedulePage extends Page {
             <Size>Formatter.select(result.properties[ScheduleMap.size]),
             Formatter.relation(result.properties[ScheduleMap.pillars]),
             Formatter.relation(result.properties[ScheduleMap.projects]),
+            Formatter.relation(result.properties[ScheduleMap.practices]),
             <Schedule>Formatter.select(result.properties[ScheduleMap.schedule]),
             Formatter.number(result.properties[ScheduleMap.day])
         );
@@ -67,6 +71,7 @@ export default class SchedulePage extends Page {
         const task = new TaskPage(this.title, null, Status.ACTIVE, this.priority, this.size, DateFormatter.date(date));
         task.pillars = this.pillars;
         task.projects = this.projects;
+        task.practices = this.practices;
 
         return task;
     }
@@ -79,6 +84,7 @@ export default class SchedulePage extends Page {
         builder.select(ScheduleMap.size, this.size);
         builder.relation(ScheduleMap.pillars, this.pillars);
         builder.relation(ScheduleMap.projects, this.projects);
+        builder.relation(ScheduleMap.practices, this.practices);
         builder.select(ScheduleMap.schedule, this.schedule);
 
         if (this.day !== null) {

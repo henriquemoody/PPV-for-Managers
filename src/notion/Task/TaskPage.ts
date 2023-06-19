@@ -19,6 +19,7 @@ export default class TaskPage extends Page {
     public calendar?: string;
     public pillars: Array<string>;
     public projects: Array<string>;
+    public practices: Array<string>;
     public lastSyncTime?: Date;
     public lastEditedTime: Date;
 
@@ -44,6 +45,7 @@ export default class TaskPage extends Page {
         this.calendar = calendar;
         this.pillars = [];
         this.projects = [];
+        this.practices = [];
     }
 
     static createFromResult(result: Result): TaskPage {
@@ -63,6 +65,7 @@ export default class TaskPage extends Page {
         taskPage.lastEditedTime = new Date(result.last_edited_time);
         taskPage.pillars = Formatter.relation(result.properties[TaskMap.pillars]);
         taskPage.projects = Formatter.relation(result.properties[TaskMap.projects]);
+        taskPage.practices = Formatter.relation(result.properties[TaskMap.practices]);
 
         return taskPage;
     }
@@ -75,6 +78,7 @@ export default class TaskPage extends Page {
         this.id = task.id;
         this.pillars = task.pillars || [];
         this.projects = task.projects || [];
+        this.practices = task.practices || [];
         this.lastSyncTime = task.lastSyncTime;
         this.lastEditedTime = task.lastEditedTime;
     }
@@ -111,6 +115,10 @@ export default class TaskPage extends Page {
 
         if (this.projects.length > 0) {
             builder.relation(TaskMap.projects, this.projects);
+        }
+
+        if (this.projects.length > 0) {
+            builder.relation(TaskMap.practices, this.practices);
         }
 
         if (this.isSynchronizable()) {

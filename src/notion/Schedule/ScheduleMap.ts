@@ -4,6 +4,7 @@ enum ScheduleMap {
     size = 'Size',
     pillars = 'Pillars',
     projects = 'Projects',
+    practices = 'Practices',
     schedule = 'Schedule',
     day = 'Day',
 }

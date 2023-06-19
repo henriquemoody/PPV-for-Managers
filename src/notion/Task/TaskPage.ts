@@ -109,18 +109,9 @@ export default class TaskPage extends Page {
             builder.richText(TaskMap.quickNote, this.quickNote);
         }
 
-        if (this.pillars.length > 0) {
-            builder.relation(TaskMap.pillars, this.pillars);
-        }
-
-        if (this.projects.length > 0) {
-            builder.relation(TaskMap.projects, this.projects);
-        }
-
-        if (this.projects.length > 0) {
-            builder.relation(TaskMap.practices, this.practices);
-        }
-
+        builder.relation(TaskMap.pillars, this.pillars);
+        builder.relation(TaskMap.projects, this.projects);
+        builder.relation(TaskMap.practices, this.practices);
         if (this.isSynchronizable()) {
             builder.date(TaskMap.lastSyncTime, DateFormatter.dateTime(new Date()));
             builder.richText(TaskMap.eventId, this.eventId);

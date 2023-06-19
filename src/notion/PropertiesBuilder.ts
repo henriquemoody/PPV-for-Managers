@@ -60,13 +60,15 @@ export default class PropertiesBuilder {
     }
 
     relation(property: string, relations: Array<string>): this {
-        this.properties[property] = {
-            relation: relations.map((relation) => {
-                return {
-                    id: relation,
-                };
-            }),
-        };
+        if (relations.length > 0) {
+            this.properties[property] = {
+                relation: relations.map((relation) => {
+                    return {
+                        id: relation,
+                    };
+                }),
+            };
+        }
 
         return this;
     }

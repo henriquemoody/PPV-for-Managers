@@ -11,7 +11,7 @@ function getRelativeDate(daysOffset) {
     return date;
 }
 
-export default class EventClient {
+export default class Client {
     public readonly modifiedEventIds: Set<string>;
 
     constructor() {

@@ -21,6 +21,8 @@ export const NOTION_TOKEN = properties.getProperty('NOTION_TOKEN');
 
 export const CALENDAR_IDS = JSON.parse(properties.getProperty('CALENDAR_IDS')) as Record<string, string>;
 
+export const CALENDAR_DENY_LIST = propertyValue('CALENDAR_DENY_LIST', []) as Array<string>;
+
 export const DAYS_DATABASE_ID = properties.getProperty('DAYS_DATABASE_ID');
 export const SCHEDULES_DATABASE_ID = properties.getProperty('SCHEDULES_DATABASE_ID');
 export const TASKS_DATABASE_ID = properties.getProperty('TASKS_DATABASE_ID');

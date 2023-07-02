@@ -17,7 +17,7 @@ export default class WeekPage extends Page {
 
     static createFromDate(date: Date): WeekPage {
         const end = new Date(date);
-        end.setDate(end.getDate() + 7);
+        end.setDate(end.getDate() + 6);
 
         return new WeekPage(DateFormatter.prettyWeek(date), DateFormatter.date(date), DateFormatter.date(end));
     }

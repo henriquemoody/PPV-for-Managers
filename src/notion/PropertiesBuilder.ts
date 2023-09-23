@@ -1,3 +1,5 @@
+import DateFormatter from '../helpers/DateFormatter';
+
 export default class PropertiesBuilder {
     private readonly properties: object;
 
@@ -12,7 +14,9 @@ export default class PropertiesBuilder {
                 {
                     type: 'text',
                     text: {
-                        content: content,
+                        content: content
+                            .replace('#Date', DateFormatter.prettyDate(new Date()))
+                            .replace('#Week', DateFormatter.prettyWeek(new Date())),
                     },
                 },
             ],

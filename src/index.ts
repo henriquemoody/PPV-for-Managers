@@ -60,6 +60,7 @@ function weekly() {
 }
 
 function monthly() {
+    notionClient.lazySave(Notion.Month.Page.createFromDate(today));
     notionClient
         .query(new Notion.Schedule.MonthlyQuery())
         .map((result) => Notion.Schedule.Page.createFromResult(result).toTask())

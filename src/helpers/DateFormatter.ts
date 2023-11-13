@@ -13,4 +13,7 @@ export default class DateFormatter {
     static prettyWeek(date: Date): string {
         return 'Week ' + Utilities.formatDate(date, DATE_TIMEZONE, 'w, yyyy');
     }
+    static prettyMonth(date: Date): string {
+        return Utilities.formatDate(date, DATE_TIMEZONE, 'MMMMM, yyyy');
+    }
 }

@@ -15,7 +15,7 @@ const DEFAULT_HEADERS: GoogleAppsScript.URL_Fetch.HttpHeaders = {
 const PAGE_URL = 'https://api.notion.com/v1/pages';
 
 export default class Client {
-    private readonly requests: {page: Page, request: GoogleAppsScript.URL_Fetch.URLFetchRequest}[];
+    private readonly requests: {page: Page; request: GoogleAppsScript.URL_Fetch.URLFetchRequest}[];
     constructor() {
         this.requests = [];
     }
@@ -34,6 +34,8 @@ export default class Client {
 
         const response = UrlFetchApp.fetch(PAGE_URL, this.buildCreateRequestOptions(page));
         const responseContent = JSON.parse(response.getContentText());
+
+        Logger.debug('Updating page ID => %s', page.toString());
 
         page.id = responseContent.id;
     }

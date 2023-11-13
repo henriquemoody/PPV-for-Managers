@@ -42,28 +42,31 @@ function hourly() {
 }
 
 function daily() {
-    notionClient.lazySave(Notion.Day.Page.createFromDate(today));
+    const dayPage = Notion.Day.Page.createFromDate(today);
+    notionClient.save(dayPage);
     notionClient
         .query(new Notion.Schedule.DailyQuery(today))
-        .map((result) => Notion.Schedule.Page.createFromResult(result).toTask())
+        .map((result) => Notion.Schedule.Page.createFromResult(result).toTask().addReplacement('Day', dayPage))
         .forEach((task) => notionClient.lazySave(task));
     notionClient.saveAll();
 }
 
 function weekly() {
-    notionClient.lazySave(Notion.Week.Page.createFromDate(today));
+    const weekPage = Notion.Week.Page.createFromDate(today);
+    notionClient.save(weekPage);
     notionClient
         .query(new Notion.Schedule.WeeklyQuery())
-        .map((result) => Notion.Schedule.Page.createFromResult(result).toTask())
+        .map((result) => Notion.Schedule.Page.createFromResult(result).toTask().addReplacement('Week', weekPage))
         .forEach((task) => notionClient.lazySave(task));
     notionClient.saveAll();
 }
 
 function monthly() {
-    notionClient.lazySave(Notion.Month.Page.createFromDate(today));
+    let monthPage = Notion.Month.Page.createFromDate(today);
+    notionClient.save(monthPage);
     notionClient
         .query(new Notion.Schedule.MonthlyQuery())
-        .map((result) => Notion.Schedule.Page.createFromResult(result).toTask())
+        .map((result) => Notion.Schedule.Page.createFromResult(result).toTask().addReplacement('Month', monthPage))
         .forEach((task) => notionClient.lazySave(task));
     notionClient.saveAll();
 }

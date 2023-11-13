@@ -7,6 +7,7 @@ import PropertiesBuilder from '../PropertiesBuilder';
 import TaskMap from './TaskMap';
 import {Size, Status} from '../enums';
 import {Result} from '../types';
+import Replacement from '../Replacement';
 
 export default class TaskPage extends Page {
     public eventId?: string;
@@ -22,6 +23,7 @@ export default class TaskPage extends Page {
     public practices: Array<string>;
     public lastSyncTime?: Date;
     public lastEditedTime: Date;
+    public replacement?: Replacement;
 
     constructor(
         title: string,
@@ -95,9 +97,15 @@ export default class TaskPage extends Page {
         return JSON.stringify(this) === JSON.stringify(task);
     }
 
+    addReplacement(placeholder: string, page: Page): this {
+        this.replacement = new Replacement(placeholder, page);
+
+        return this;
+    }
+
     toProperties(): object {
         const builder = new PropertiesBuilder();
-        builder.title(TaskMap.title, this.title);
+        builder.title(TaskMap.title, this.title, this.replacement);
         builder.date(TaskMap.date, this.start, this.end);
         builder.select(TaskMap.priority, this.priority);
         builder.select(TaskMap.status, this.status);

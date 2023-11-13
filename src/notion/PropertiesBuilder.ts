@@ -1,4 +1,4 @@
-import DateFormatter from '../helpers/DateFormatter';
+import Replacement from './Replacement';
 
 export default class PropertiesBuilder {
     private readonly properties: object;
@@ -7,19 +7,52 @@ export default class PropertiesBuilder {
         this.properties = {};
     }
 
-    title(property: string, content: string): this {
-        this.properties[property] = {
-            type: 'title',
-            title: [
-                {
+    title(property: string, content: string, replacement?: Replacement): this {
+        if (!replacement) {
+            this.properties[property] = {
+                type: 'title',
+                title: [
+                    {
+                        type: 'text',
+                        text: {
+                            content: content,
+                        },
+                    },
+                ],
+            };
+
+            return this;
+        }
+
+        const title = [];
+        const contentParts = content.split('#');
+        for (const contentPart of contentParts) {
+            if (contentPart !== replacement.placeholder || !replacement.page.id) {
+                title.push({
                     type: 'text',
                     text: {
-                        content: content
-                            .replace('#Date', DateFormatter.prettyDate(new Date()))
-                            .replace('#Week', DateFormatter.prettyWeek(new Date())),
+                        content: contentPart,
+                    },
+                });
+                continue;
+            }
+
+            title.push({
+                type: 'mention',
+                mention: {
+                    type: 'page',
+                    page: {
+                        id: replacement.page.id,
                     },
                 },
-            ],
+                plain_text: replacement.page.title,
+                href: 'https://www.notion.so/' + replacement.page.id.replace(/-/g, ''),
+            });
+        }
+
+        this.properties[property] = {
+            type: 'title',
+            title: title,
         };
 
         return this;

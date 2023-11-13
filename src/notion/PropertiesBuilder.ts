@@ -8,17 +8,10 @@ export default class PropertiesBuilder {
     }
 
     title(property: string, content: string, replacement?: Replacement): this {
-        if (!replacement) {
+        if (!replacement || !replacement.page.id || content.indexOf(replacement.placeholder) === -1) {
             this.properties[property] = {
                 type: 'title',
-                title: [
-                    {
-                        type: 'text',
-                        text: {
-                            content: content,
-                        },
-                    },
-                ],
+                title: [this.text(content)],
             };
 
             return this;
@@ -27,13 +20,8 @@ export default class PropertiesBuilder {
         const title = [];
         const contentParts = content.split('#');
         for (const contentPart of contentParts) {
-            if (contentPart !== replacement.placeholder || !replacement.page.id) {
-                title.push({
-                    type: 'text',
-                    text: {
-                        content: contentPart,
-                    },
-                });
+            if (contentPart !== replacement.placeholder) {
+                title.push(this.text(contentPart));
                 continue;
             }
 
@@ -61,13 +49,7 @@ export default class PropertiesBuilder {
     richText(property: string, content: string): this {
         this.properties[property] = {
             type: 'rich_text',
-            rich_text: [
-                {
-                    text: {
-                        content: content,
-                    },
-                },
-            ],
+            rich_text: [this.text(content)],
         };
 
         return this;
@@ -116,6 +98,15 @@ export default class PropertiesBuilder {
         };
 
         return this;
+    }
+
+    private text(content: string): object {
+        return {
+            type: 'text',
+            text: {
+                content,
+            },
+        };
     }
 
     build(): object {

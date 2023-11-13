@@ -15,7 +15,7 @@ const DEFAULT_HEADERS: GoogleAppsScript.URL_Fetch.HttpHeaders = {
 const PAGE_URL = 'https://api.notion.com/v1/pages';
 
 export default class Client {
-    private readonly requests: GoogleAppsScript.URL_Fetch.URLFetchRequest[];
+    private readonly requests: {page: Page, request: GoogleAppsScript.URL_Fetch.URLFetchRequest}[];
     constructor() {
         this.requests = [];
     }
@@ -28,18 +28,25 @@ export default class Client {
         }
 
         Logger.info('Creating on Notion => %s', page.toString());
-        !DRY_RUN_MODE && UrlFetchApp.fetch(PAGE_URL, this.buildCreateRequestOptions(page));
+        if (DRY_RUN_MODE) {
+            return;
+        }
+
+        const response = UrlFetchApp.fetch(PAGE_URL, this.buildCreateRequestOptions(page));
+        const responseContent = JSON.parse(response.getContentText());
+
+        page.id = responseContent.id;
     }
 
     lazySave(page: Page): void {
         if (page.id) {
             Logger.info('Updating on Notion [lazy] => %s', page.toString());
-            this.requests.push(this.buildUpdateRequest(page));
+            this.requests.push({page, request: this.buildUpdateRequest(page)});
             return;
         }
 
         Logger.info('Creating on Notion [lazy] => %s', page.toString());
-        this.requests.push(this.buildCreateRequest(page));
+        this.requests.push({page, request: this.buildCreateRequest(page)});
     }
 
     saveAll(): void {
@@ -54,10 +61,14 @@ export default class Client {
             return;
         }
 
-        const responses = UrlFetchApp.fetchAll(this.requests);
+        const responses = UrlFetchApp.fetchAll(this.requests.map((request) => request.request));
         for (let i = 0; i < responses.length; i++) {
-            let response = responses[i];
+            const response = responses[i];
             if (response.getResponseCode() === 200) {
+                const page = this.requests[i].page;
+                const responseContent = JSON.parse(response.getContentText());
+
+                page.id = responseContent.id;
                 continue;
             }
 

@@ -96,7 +96,7 @@ export default class Client {
         const calendar = CalendarApp.getCalendarById(event.calendarId);
         const options = {description: event.description};
 
-        if (!event.allDay) {
+        if (!event.isAllDay) {
             const createdEvent = calendar.createEvent(event.summary, event.start, event.end, options);
             event.updateId(createdEvent.getId());
             this.modifiedEventIds.add(event.id);
@@ -120,7 +120,7 @@ export default class Client {
         const calendarEvent = CalendarApp.getCalendarById(event.calendarId).getEventById(event.id);
 
         calendarEvent.setTitle(event.summary);
-        if (event.allDay) {
+        if (event.isAllDay) {
             calendarEvent.setAllDayDates(event.start, event.end);
             return;
         }

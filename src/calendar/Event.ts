@@ -4,7 +4,7 @@ import DateFormatter from '../helpers/DateFormatter';
 
 export default class Event {
     public id?: string;
-    public allDay: boolean;
+    public isAllDay: boolean;
     public start: Date;
     public end: Date;
     public type: string;
@@ -15,7 +15,7 @@ export default class Event {
 
     constructor(
         calendar: string,
-        allDay: boolean,
+        isAllDay: boolean,
         start: Date,
         end: Date,
         eventType: string,
@@ -24,7 +24,7 @@ export default class Event {
         description?: string
     ) {
         this.calendar = calendar;
-        this.allDay = allDay;
+        this.isAllDay = isAllDay;
         this.start = start;
         this.end = end;
         this.type = eventType;
@@ -87,7 +87,7 @@ export default class Event {
     isUpToDate(event: Event): boolean {
         return (
             this.id === event.id &&
-            this.allDay === event.allDay &&
+            this.isAllDay === event.isAllDay &&
             this.start.toISOString() === event.start.toISOString() &&
             this.end.toISOString() === event.end.toISOString() &&
             this.type === event.type &&
@@ -98,7 +98,7 @@ export default class Event {
 
     merge(event: Event): void {
         this.id = event.id;
-        this.allDay = event.allDay;
+        this.isAllDay = event.isAllDay;
         this.start = event.start;
         this.end = event.end;
         this.summary = event.summary;

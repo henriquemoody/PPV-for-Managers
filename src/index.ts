@@ -198,7 +198,7 @@ function createTaskPageFromEvent(event: Calendar.Event): Notion.Task.Page {
     let start;
     let end;
 
-    if (event.allDay) {
+    if (event.isAllDay) {
         let endDate = new Date(event.end);
         endDate.setDate(endDate.getDate() - 1);
 

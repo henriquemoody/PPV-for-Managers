@@ -16,6 +16,26 @@ test('formats a title', () => {
     expect(sut.title(PROPERTY_NAME)).toBe(title);
 });
 
+test('formats a checkbox when it is false', () => {
+    const sut = new PropertiesFormatter({
+        [PROPERTY_NAME]: {
+            type: 'checkbox',
+            checkbox: false,
+        },
+    });
+    expect(sut.checkbox(PROPERTY_NAME)).toBeFalsy();
+});
+
+test('formats a checkbox when it is true', () => {
+    const sut = new PropertiesFormatter({
+        [PROPERTY_NAME]: {
+            type: 'checkbox',
+            checkbox: true,
+        },
+    });
+    expect(sut.checkbox(PROPERTY_NAME)).toBeTruthy();
+});
+
 test('formats a date start when it is null', () => {
     const sut = new PropertiesFormatter({
         [PROPERTY_NAME]: {

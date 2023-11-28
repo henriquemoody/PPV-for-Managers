@@ -33,6 +33,13 @@ export default class DateFormatter {
             day: '2-digit',
         });
     }
+    static prettyShortDate(date: Date): string {
+        return date.toLocaleDateString(locale, {
+            timeZone: DATE_TIMEZONE,
+            month: 'short',
+            day: '2-digit',
+        });
+    }
     static prettyWeek(date: Date): string {
         const dateCopy = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
         dateCopy.setUTCDate(dateCopy.getUTCDate() + 4 - (dateCopy.getUTCDay() || 7));

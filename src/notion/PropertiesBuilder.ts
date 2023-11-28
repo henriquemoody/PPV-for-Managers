@@ -78,6 +78,15 @@ export default class PropertiesBuilder {
         return this;
     }
 
+    checkbox(property: string, value: boolean): this {
+        this.properties[property] = {
+            type: 'checkbox',
+            checkbox: value,
+        };
+
+        return this;
+    }
+
     relation(property: string, relations: Array<string>): this {
         if (relations.length > 0) {
             this.properties[property] = {

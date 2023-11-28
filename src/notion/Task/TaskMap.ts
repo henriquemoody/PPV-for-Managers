@@ -3,6 +3,7 @@ enum TaskMap {
     date = 'Do Date',
     priority = 'Priority',
     size = 'Size',
+    recurring = 'Recurring',
     status = 'Status',
     quickNote = 'Quick Note',
     pillars = 'Pillars',

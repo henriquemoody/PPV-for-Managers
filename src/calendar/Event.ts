@@ -5,6 +5,7 @@ import DateFormatter from '../helpers/DateFormatter';
 export default class Event {
     public id?: string;
     public isAllDay: boolean;
+    public isRecurring: boolean;
     public start: Date;
     public end: Date;
     public type: string;
@@ -16,6 +17,7 @@ export default class Event {
     constructor(
         calendar: string,
         isAllDay: boolean,
+        isRecurring: boolean,
         start: Date,
         end: Date,
         eventType: string,
@@ -25,6 +27,7 @@ export default class Event {
     ) {
         this.calendar = calendar;
         this.isAllDay = isAllDay;
+        this.isRecurring = isRecurring;
         this.start = start;
         this.end = end;
         this.type = eventType;
@@ -35,6 +38,7 @@ export default class Event {
 
     static createCalendarAndEvent(calendar: string, calendarEvent: GoogleAppsScript.Calendar.Schema.Event): Event {
         const allDay = !!calendarEvent.start.date;
+        const isRecurring = !!calendarEvent.recurringEventId;
         let start: Date;
         let end: Date;
         if (allDay) {
@@ -45,15 +49,21 @@ export default class Event {
             end = new Date(calendarEvent.end.dateTime);
         }
 
+        let summary = calendarEvent.summary || '(No title)';
+        if (isRecurring) {
+            summary = summary + ' (' + DateFormatter.prettyShortDate(start) + ')';
+        }
+
         const event = new Event(
             calendar,
             allDay,
+            isRecurring,
             start,
             end,
             // @ts-ignore The library is outdated and doesn't have the eventType property
             calendarEvent.eventType,
             calendarEvent.status,
-            calendarEvent.summary || '(No title)',
+            summary,
             calendarEvent.description || null
         );
         event.updateId(calendarEvent.id);
@@ -88,6 +98,7 @@ export default class Event {
         return (
             this.id === event.id &&
             this.isAllDay === event.isAllDay &&
+            this.isRecurring === event.isRecurring &&
             this.start.toISOString() === event.start.toISOString() &&
             this.end.toISOString() === event.end.toISOString() &&
             this.type === event.type &&

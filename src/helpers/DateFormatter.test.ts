@@ -14,6 +14,10 @@ test('formats a date object into pretty date', () => {
     expect(DateFormatter.prettyDate(date)).toBe('November 27, 2023');
 });
 
+test('formats a date object into pretty short date', () => {
+    expect(DateFormatter.prettyShortDate(date)).toBe('Nov 27');
+});
+
 test('formats a date object into pretty week', () => {
     expect(DateFormatter.prettyWeek(date)).toBe('Week 48, 2023');
 });

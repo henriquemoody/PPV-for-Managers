@@ -27,6 +27,10 @@ export default class PropertiesFormatter {
         return this.properties[property].select?.name ?? null;
     }
 
+    checkbox(property: string): boolean {
+        return this.properties[property].checkbox;
+    }
+
     relation(property: string): string[] {
         return this.properties[property].relation.map((relation) => relation.id);
     }

@@ -126,6 +126,7 @@ function createTaskPageFromEvent(event: Calendar.Event): Notion.Task.Page {
         event.status === 'cancelled' ? Notion.Enum.Status.CANCELED : Notion.Enum.Status.ACTIVE,
         Notion.Enum.Priority.SCHEDULED,
         null,
+        event.isRecurring,
         start,
         end || null,
         event.id,

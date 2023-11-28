@@ -21,6 +21,26 @@ class DummyPage extends Page {
 
 const PROPERTY_NAME = 'title_property';
 
+test('builds a checkbox that is true', () => {
+    const sut = new PropertiesBuilder();
+    sut.checkbox(PROPERTY_NAME, true);
+
+    expect(sut.build()).toHaveProperty(PROPERTY_NAME, {
+        type: 'checkbox',
+        checkbox: true,
+    });
+});
+
+test('builds a checkbox that is false', () => {
+    const sut = new PropertiesBuilder();
+    sut.checkbox(PROPERTY_NAME, false);
+
+    expect(sut.build()).toHaveProperty(PROPERTY_NAME, {
+        type: 'checkbox',
+        checkbox: false,
+    });
+});
+
 test('builds a title', () => {
     const sut = new PropertiesBuilder();
     sut.title(PROPERTY_NAME, 'title_content');

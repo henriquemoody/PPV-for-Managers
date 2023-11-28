@@ -24,6 +24,7 @@ export default class TaskPage extends Page {
     public lastSyncTime?: Date;
     public lastEditedTime: Date;
     public replacement?: Replacement;
+    public isRecurring: boolean;
 
     constructor(
         title: string,
@@ -31,6 +32,7 @@ export default class TaskPage extends Page {
         status: Status,
         priority: string,
         size: Size | null,
+        isRecurring: boolean,
         start,
         end?,
         eventId?,
@@ -43,6 +45,7 @@ export default class TaskPage extends Page {
         this.status = status;
         this.priority = priority;
         this.size = size;
+        this.isRecurring = isRecurring;
         this.eventId = eventId;
         this.calendar = calendar;
         this.pillars = [];
@@ -58,6 +61,7 @@ export default class TaskPage extends Page {
             <Status>formatter.select(TaskMap.status),
             formatter.select(TaskMap.priority),
             <Size>formatter.select(TaskMap.size),
+            formatter.checkbox(TaskMap.recurring),
             formatter.dateStart(TaskMap.date),
             formatter.dateEnd(TaskMap.date),
             formatter.richText(TaskMap.eventId),
@@ -110,6 +114,7 @@ export default class TaskPage extends Page {
         builder.date(TaskMap.date, this.start, this.end);
         builder.select(TaskMap.priority, this.priority);
         builder.select(TaskMap.status, this.status);
+        builder.checkbox(TaskMap.recurring, this.isRecurring);
         if (this.size) {
             builder.select(TaskMap.size, this.size);
         }

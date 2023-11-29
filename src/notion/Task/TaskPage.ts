@@ -1,7 +1,7 @@
 import {TASKS_DATABASE_ID, CALENDAR_IDS} from '../../config';
 
 import DateFormatter from '../../helpers/DateFormatter';
-import Formatter from '../Formatter';
+import PropertiesFormatter from '../PropertiesFormatter';
 import Page from '../Page';
 import PropertiesBuilder from '../PropertiesBuilder';
 import TaskMap from './TaskMap';
@@ -51,23 +51,24 @@ export default class TaskPage extends Page {
     }
 
     static createFromResult(result: Result): TaskPage {
+        const formatter = new PropertiesFormatter(result.properties);
         const taskPage = new TaskPage(
-            Formatter.title(result.properties[TaskMap.title]),
-            Formatter.richText(result.properties[TaskMap.quickNote]),
-            <Status>Formatter.select(result.properties[TaskMap.status]),
-            Formatter.select(result.properties[TaskMap.priority]),
-            <Size>Formatter.select(result.properties[TaskMap.size]),
-            Formatter.dateStart(result.properties[TaskMap.date]),
-            Formatter.dateEnd(result.properties[TaskMap.date]),
-            Formatter.richText(result.properties[TaskMap.eventId]),
-            Formatter.select(result.properties[TaskMap.calendar])
+            formatter.title(TaskMap.title),
+            formatter.richText(TaskMap.quickNote),
+            <Status>formatter.select(TaskMap.status),
+            formatter.select(TaskMap.priority),
+            <Size>formatter.select(TaskMap.size),
+            formatter.dateStart(TaskMap.date),
+            formatter.dateEnd(TaskMap.date),
+            formatter.richText(TaskMap.eventId),
+            formatter.select(TaskMap.calendar)
         );
         taskPage.id = result.id;
-        taskPage.lastSyncTime = new Date(result.properties[TaskMap.lastSyncTime]);
+        taskPage.lastSyncTime = new Date(TaskMap.lastSyncTime);
         taskPage.lastEditedTime = new Date(result.last_edited_time);
-        taskPage.pillars = Formatter.relation(result.properties[TaskMap.pillars]);
-        taskPage.projects = Formatter.relation(result.properties[TaskMap.projects]);
-        taskPage.practices = Formatter.relation(result.properties[TaskMap.practices]);
+        taskPage.pillars = formatter.relation(TaskMap.pillars);
+        taskPage.projects = formatter.relation(TaskMap.projects);
+        taskPage.practices = formatter.relation(TaskMap.practices);
 
         return taskPage;
     }

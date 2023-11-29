@@ -1,7 +1,7 @@
 import {SCHEDULES_DATABASE_ID} from '../../config';
 
 import DateFormatter from '../../helpers/DateFormatter';
-import Formatter from '../Formatter';
+import PropertiesFormatter from '../PropertiesFormatter';
 import Page from '../Page';
 import PropertiesBuilder from '../PropertiesBuilder';
 import ScheduleMap from './ScheduleMap';
@@ -39,15 +39,17 @@ export default class SchedulePage extends Page {
     }
 
     static createFromResult(result: Result): SchedulePage {
+        const formatter = new PropertiesFormatter(result.properties);
+
         return new SchedulePage(
-            Formatter.title(result.properties[ScheduleMap.title]),
-            Formatter.select(result.properties[ScheduleMap.priority]),
-            <Size>Formatter.select(result.properties[ScheduleMap.size]),
-            Formatter.relation(result.properties[ScheduleMap.pillars]),
-            Formatter.relation(result.properties[ScheduleMap.projects]),
-            Formatter.relation(result.properties[ScheduleMap.practices]),
-            <Schedule>Formatter.select(result.properties[ScheduleMap.schedule]),
-            Formatter.number(result.properties[ScheduleMap.day])
+            formatter.title(ScheduleMap.title),
+            formatter.select(ScheduleMap.priority),
+            <Size>formatter.select(ScheduleMap.size),
+            formatter.relation(ScheduleMap.pillars),
+            formatter.relation(ScheduleMap.projects),
+            formatter.relation(ScheduleMap.practices),
+            <Schedule>formatter.select(ScheduleMap.schedule),
+            formatter.number(ScheduleMap.day)
         );
     }
 

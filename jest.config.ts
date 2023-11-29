@@ -4,7 +4,6 @@ class Properties {
     private readonly properties: {[key: string]: string};
     constructor() {
         this.properties = {
-            CALENDAR_DENY_LIST: '[]',
             CALENDAR_IDS: '[]',
             DAYS_DATABASE_ID: 'df911a7c-7899-4e19-93c2-666f1273d168',
             NOTION_TOKEN: 'secret_abc',

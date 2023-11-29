@@ -1,4 +1,4 @@
-import {CALENDAR_IDS, CALENDAR_DENY_LIST} from '../config';
+import {CALENDAR_IDS, CALENDAR_IGNORE_REGEXP} from '../config';
 
 import DateFormatter from '../helpers/DateFormatter';
 
@@ -105,7 +105,7 @@ export default class Event {
     }
 
     isSynchronizable(): boolean {
-        return this.type === 'default' && !CALENDAR_DENY_LIST.includes(this.summary);
+        return this.type === 'default' && !this.summary.match(CALENDAR_IGNORE_REGEXP);
     }
 
     isCanceled(): boolean {

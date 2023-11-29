@@ -24,8 +24,7 @@ function propertyDecode(property: string, defaultValue: any): any {
 export const NOTION_TOKEN: string = propertyValue('NOTION_TOKEN');
 
 export const CALENDAR_IDS: Record<string, string> = propertyDecode('CALENDAR_IDS', '[]') as Record<string, string>;
-
-export const CALENDAR_DENY_LIST: Array<string> = propertyDecode('CALENDAR_DENY_LIST', '[]') as Array<string>;
+export const CALENDAR_IGNORE_REGEXP: RegExp = new RegExp(propertyValue('CALENDAR_IGNORE_REGEXP', '/^$/'));
 
 export const DAYS_DATABASE_ID: string = <string>propertyValue('DAYS_DATABASE_ID');
 export const SCHEDULES_DATABASE_ID: string = <string>propertyValue('SCHEDULES_DATABASE_ID');

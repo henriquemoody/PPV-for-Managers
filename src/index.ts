@@ -104,6 +104,27 @@ function createTaskPageFromEvent(event: Calendar.Event): Notion.Task.Page {
         return formatted.substring(0, 247) + '...';
     };
 
+    const formatSize = (event: Calendar.Event): Notion.Enum.Size => {
+        if (event.isAllDay) {
+            return Notion.Enum.Size.EXTRA_LARGE;
+        }
+
+        const differenceInMinutes = (event.end.getTime() - event.start.getTime()) / (1000 * 60);
+        if (differenceInMinutes <= 15) {
+            return Notion.Enum.Size.SMALL;
+        }
+
+        if (differenceInMinutes < 60) {
+            return Notion.Enum.Size.MEDIUM;
+        }
+
+        if (differenceInMinutes < 90) {
+            return Notion.Enum.Size.LARGE;
+        }
+
+        return Notion.Enum.Size.EXTRA_LARGE;
+    };
+
     let start;
     let end;
 
@@ -116,8 +137,8 @@ function createTaskPageFromEvent(event: Calendar.Event): Notion.Task.Page {
 
         end = start === end ? null : end;
     } else {
-        start = DateFormatter.dateTime(new Date(event.start));
-        end = DateFormatter.dateTime(new Date(event.end));
+        start = DateFormatter.dateTime(event.start);
+        end = DateFormatter.dateTime(event.end);
     }
 
     return new Notion.Task.Page(
@@ -125,10 +146,10 @@ function createTaskPageFromEvent(event: Calendar.Event): Notion.Task.Page {
         formatDescription(event.description) || null,
         event.status === 'cancelled' ? Notion.Enum.Status.CANCELED : Notion.Enum.Status.ACTIVE,
         Notion.Enum.Priority.SCHEDULED,
-        null,
+        formatSize(event),
         event.isRecurring,
         start,
-        end || null,
+        end,
         event.id,
         event.calendar
     );

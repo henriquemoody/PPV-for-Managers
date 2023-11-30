@@ -16,7 +16,7 @@ export default class TaskPage extends Page {
     public quickNote: string | null;
     public status: Status;
     public priority: string;
-    public size?: Size | null;
+    public size: Size;
     public calendar?: string;
     public pillars: Array<string>;
     public projects: Array<string>;
@@ -31,7 +31,7 @@ export default class TaskPage extends Page {
         quickNote: string | null,
         status: Status,
         priority: string,
-        size: Size | null,
+        size: Size,
         isRecurring: boolean,
         start,
         end?,
@@ -115,9 +115,7 @@ export default class TaskPage extends Page {
         builder.select(TaskMap.priority, this.priority);
         builder.select(TaskMap.status, this.status);
         builder.checkbox(TaskMap.recurring, this.isRecurring);
-        if (this.size) {
-            builder.select(TaskMap.size, this.size);
-        }
+        builder.select(TaskMap.size, this.size);
 
         if (this.quickNote) {
             builder.richText(TaskMap.quickNote, this.quickNote);

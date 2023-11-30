@@ -1,4 +1,4 @@
-import {CALENDAR_IDS, DRY_RUN_MODE, RELATIVE_MAX_DAY, RELATIVE_MIN_DAY} from '../config';
+import {CALENDAR_IDS, RELATIVE_MAX_DAY, RELATIVE_MIN_DAY} from '../config';
 
 import Event from './Event';
 import Logger from '../helpers/Logger';
@@ -66,64 +66,5 @@ export default class Client {
         } while (options.pageToken);
 
         return events;
-    }
-
-    delete(event: Event): void {
-        Logger.info('Deleting event on Calendar => %s', event.toString());
-        !DRY_RUN_MODE && CalendarApp.getCalendarById(event.calendarId).getEventById(event.id).deleteEvent();
-
-        this.modifiedEventIds.add(event.id);
-    }
-
-    save(event: Event): void {
-        if (event.id) {
-            Logger.info('Updating on Calendar => %s', event.toString());
-            this.update(event);
-            return;
-        }
-
-        Logger.info('Creating on Calendar => %s', event.toString());
-        this.create(event);
-    }
-
-    private create(event: Event): void {
-        if (DRY_RUN_MODE) {
-            event.updateId((Math.random() + 1).toString(36).substring(2));
-            this.modifiedEventIds.add(event.id);
-            return;
-        }
-
-        const calendar = CalendarApp.getCalendarById(event.calendarId);
-        const options = {description: event.description};
-
-        if (!event.isAllDay) {
-            const createdEvent = calendar.createEvent(event.summary, event.start, event.end, options);
-            event.updateId(createdEvent.getId());
-            this.modifiedEventIds.add(event.id);
-            return;
-        }
-
-        const createdEvent = calendar.createAllDayEvent(event.summary, event.start, event.end, options);
-
-        event.updateId(createdEvent.getId());
-
-        this.modifiedEventIds.add(event.id);
-    }
-
-    private update(event: Event): void {
-        this.modifiedEventIds.add(event.id);
-
-        if (DRY_RUN_MODE) {
-            return;
-        }
-
-        const calendarEvent = CalendarApp.getCalendarById(event.calendarId).getEventById(event.id);
-
-        calendarEvent.setTitle(event.summary);
-        if (event.isAllDay) {
-            calendarEvent.setAllDayDates(event.start, event.end);
-            return;
-        }
-        calendarEvent.setTime(event.start, event.end);
     }
 }

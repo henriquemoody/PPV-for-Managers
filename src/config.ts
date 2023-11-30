@@ -39,8 +39,6 @@ export const DATE_TIMEZONE: string = <string>propertyValue('DATE_TIMEZONE', 'CET
 export const DRY_RUN_MODE: boolean = <boolean>propertyDecode('DRY_RUN_MODE', false);
 
 export const ARCHIVE_CANCELLED_EVENTS: boolean = <boolean>propertyValue('ARCHIVE_CANCELLED_EVENTS', true);
-export const DELETE_CANCELLED_EVENTS: boolean = <boolean>propertyValue('DELETE_CANCELLED_EVENTS', true);
-export const UPDATE_CHANGED_EVENTS: boolean = <boolean>propertyValue('UPDATE_CHANGED_EVENTS', true);
 
 export const RELATIVE_MAX_DAY: number = <number>propertyValue('RELATIVE_MAX_DAY', 15);
 export const RELATIVE_MIN_DAY: number = <number>propertyValue('RELATIVE_MIN_DAY', 0);

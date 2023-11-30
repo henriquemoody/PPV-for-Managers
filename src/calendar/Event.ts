@@ -96,14 +96,6 @@ export default class Event {
         );
     }
 
-    merge(event: Event): void {
-        this.id = event.id;
-        this.isAllDay = event.isAllDay;
-        this.start = event.start;
-        this.end = event.end;
-        this.summary = event.summary;
-    }
-
     isSynchronizable(): boolean {
         return this.type === 'default' && !this.summary.match(CALENDAR_IGNORE_REGEXP);
     }

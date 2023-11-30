@@ -10,7 +10,6 @@ class Properties {
             DATE_TIMEZONE: 'Europe/Berlin',
             SCHEDULES_DATABASE_ID: '052f2f50-1b85-414e-8d64-4ab387a1fecb',
             TASKS_DATABASE_ID: '047cd64c-7d99-4ebd-929d-019290e8a063',
-            UPDATE_CHANGED_EVENTS: 'false',
             WEEKS_DATABASE_ID: 'b376c5c3-da0e-48cf-9ff4-cac4e6e6d73d',
         };
     }

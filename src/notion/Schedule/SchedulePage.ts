@@ -87,15 +87,14 @@ export default class SchedulePage extends Page {
     }
 
     toProperties(): object {
-        const builder = new PropertiesBuilder();
-
-        builder.title(ScheduleMap.title, this.title);
-        builder.select(ScheduleMap.priority, this.priority);
-        builder.select(ScheduleMap.size, this.size);
-        builder.relation(ScheduleMap.pillars, this.pillars);
-        builder.relation(ScheduleMap.projects, this.projects);
-        builder.relation(ScheduleMap.practices, this.practices);
-        builder.select(ScheduleMap.schedule, this.schedule);
+        const builder = new PropertiesBuilder()
+            .title(ScheduleMap.title, this.title)
+            .select(ScheduleMap.priority, this.priority)
+            .select(ScheduleMap.size, this.size)
+            .relation(ScheduleMap.pillars, this.pillars)
+            .relation(ScheduleMap.projects, this.projects)
+            .relation(ScheduleMap.practices, this.practices)
+            .select(ScheduleMap.schedule, this.schedule);
 
         if (this.day !== null) {
             builder.number(ScheduleMap.day, this.day);

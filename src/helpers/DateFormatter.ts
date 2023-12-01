@@ -30,14 +30,15 @@ export default class DateFormatter {
             timeZone: DATE_TIMEZONE,
             year: 'numeric',
             month: 'long',
-            day: '2-digit',
+            day: 'numeric',
         });
     }
     static prettyShortDate(date: Date): string {
         return date.toLocaleDateString(locale, {
             timeZone: DATE_TIMEZONE,
+            year: 'numeric',
             month: 'short',
-            day: '2-digit',
+            day: 'numeric',
         });
     }
     static prettyWeek(date: Date): string {

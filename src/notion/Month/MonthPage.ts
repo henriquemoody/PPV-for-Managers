@@ -1,4 +1,4 @@
-import {WEEKS_DATABASE_ID} from '../../config';
+import {MONTHS_DATABASE_ID} from '../../config';
 
 import DateFormatter from '../../helpers/DateFormatter';
 import Page from '../Page';
@@ -10,7 +10,7 @@ export default class MonthPage extends Page {
     public end: string;
 
     private constructor(title: string, start: string, end: string) {
-        super(WEEKS_DATABASE_ID, title);
+        super(MONTHS_DATABASE_ID, title);
         this.start = start;
         this.end = end;
     }

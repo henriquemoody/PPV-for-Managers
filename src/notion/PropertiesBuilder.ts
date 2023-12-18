@@ -8,39 +8,9 @@ export default class PropertiesBuilder {
     }
 
     title(property: string, content: string, replacement?: Replacement): this {
-        if (!replacement || !replacement.page.id || content.indexOf(replacement.placeholder) === -1) {
-            this.properties[property] = {
-                type: 'title',
-                title: [this.text(content)],
-            };
-
-            return this;
-        }
-
-        const title = [];
-        const contentParts = content.split('#');
-        for (const contentPart of contentParts) {
-            if (contentPart !== replacement.placeholder) {
-                title.push(this.text(contentPart));
-                continue;
-            }
-
-            title.push({
-                type: 'mention',
-                mention: {
-                    type: 'page',
-                    page: {
-                        id: replacement.page.id,
-                    },
-                },
-                plain_text: replacement.page.title,
-                href: 'https://www.notion.so/' + replacement.page.id.replace(/-/g, ''),
-            });
-        }
-
         this.properties[property] = {
             type: 'title',
-            title: title,
+            title: this.toRichText(content, replacement),
         };
 
         return this;
@@ -49,7 +19,7 @@ export default class PropertiesBuilder {
     richText(property: string, content: string): this {
         this.properties[property] = {
             type: 'rich_text',
-            rich_text: [this.text(content)],
+            rich_text: [this.toText(content)],
         };
 
         return this;
@@ -109,12 +79,78 @@ export default class PropertiesBuilder {
         return this;
     }
 
-    private text(content: string): object {
+    private toRichText(content: string, replacement?: Replacement): Array<object> {
+        if (!content) {
+            return [];
+        }
+
+        const placeholderPattern = /^(.*)#([A-Za-z]+)(.*)$/;
+        const placeholder = content.match(placeholderPattern);
+        if (replacement && replacement.page.id && placeholder && placeholder[2] === replacement.placeholder) {
+            return [
+                ...this.toRichText(placeholder[1]),
+                this.toMention(replacement.page.title, replacement.page.id),
+                ...this.toRichText(placeholder[3]),
+            ];
+        }
+
+        const mentionPattern = /^(.*)@\[([^\]]+)\]\(([^\)]+)\)(.*)$/;
+        const mention = content.match(mentionPattern);
+        if (mention) {
+            return [
+                ...this.toRichText(mention[1]),
+                this.toMention(mention[2], mention[3]),
+                ...this.toRichText(mention[4]),
+            ];
+        }
+
+        const linkPattern = /^(.*)\[([^\]]+)\]\(([^\)]+)\)(.*)$/;
+        const link = content.match(linkPattern);
+        if (link) {
+            return [...this.toRichText(link[1]), this.toLink(link[2], link[3]), ...this.toRichText(link[4])];
+        }
+
+        return [this.toText(content)];
+    }
+
+    private toText(content: string): object {
+        if (content.length === 0) {
+            return;
+        }
+
         return {
             type: 'text',
             text: {
                 content,
             },
+        };
+    }
+
+    private toMention(text: string, id: string): object {
+        return {
+            type: 'mention',
+            mention: {
+                type: 'page',
+                page: {
+                    id: id,
+                },
+            },
+            plain_text: text,
+            href: 'https://www.notion.so/' + id.replace(/-/g, ''),
+        };
+    }
+
+    private toLink(text: string, url: string): object {
+        return {
+            type: 'text',
+            text: {
+                content: text,
+                link: {
+                    url: url,
+                },
+            },
+            plain_text: text,
+            href: url,
         };
     }
 

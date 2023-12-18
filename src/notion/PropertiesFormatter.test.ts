@@ -177,3 +177,54 @@ test('formats rich text', () => {
     });
     expect(sut.richText(PROPERTY_NAME)).toBe('My rich text');
 });
+
+test('formats title with mention', () => {
+    const sut = new PropertiesFormatter({
+        [PROPERTY_NAME]: {
+            type: 'title',
+            title: [
+                {
+                    type: 'text',
+                    plain_text: 'Work on ',
+                },
+                {
+                    type: 'mention',
+                    mention: {
+                        type: 'page',
+                        page: {
+                            id: '6f7441d5-4a58-4cb0-9ce2-2e8051d57e3a',
+                        },
+                    },
+                    plain_text: 'Page',
+                    href: 'https://www.notion.so/6f7441d54a584cb09ce22e8051d57e3a',
+                },
+            ],
+        },
+    });
+    expect(sut.title(PROPERTY_NAME)).toBe('Work on @[Page](6f7441d5-4a58-4cb0-9ce2-2e8051d57e3a)');
+});
+
+test('formats title with link', () => {
+    const sut = new PropertiesFormatter({
+        [PROPERTY_NAME]: {
+            type: 'title',
+            title: [
+                {
+                    plain_text: 'Visit ',
+                },
+                {
+                    type: 'text',
+                    text: {
+                        content: 'Link',
+                        link: {
+                            url: 'https://example.com/',
+                        },
+                    },
+                    plain_text: 'Link',
+                    href: 'https://example.com/',
+                },
+            ],
+        },
+    });
+    expect(sut.title(PROPERTY_NAME)).toBe('Visit [Link](https://example.com/)');
+});

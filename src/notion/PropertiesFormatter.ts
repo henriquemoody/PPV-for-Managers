@@ -42,6 +42,14 @@ export default class PropertiesFormatter {
     private richTextValue(richText: any[]): string | null {
         let plainText = '';
         for (let i = 0; i < richText.length; i++) {
+            if (richText[i].mention) {
+                plainText += `@[${richText[i].plain_text}](${richText[i].mention.page.id})`;
+                continue;
+            }
+            if (richText[i].href) {
+                plainText += `[${richText[i].plain_text}](${richText[i].href})`;
+                continue;
+            }
             plainText += richText[i].rich_text ? richText[i].rich_text.plain_text : richText[i].plain_text;
         }
 

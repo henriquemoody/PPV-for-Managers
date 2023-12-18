@@ -141,3 +141,148 @@ test('builds a title replacing placeholder', () => {
         type: 'title',
     });
 });
+
+test('builds a title with mention', () => {
+    const sut = new PropertiesBuilder();
+
+    const page_text = 'Page';
+    const page_id = '6f7441d5-4a58-4cb0-9ce2-2e8051d57e3a';
+
+    sut.title(PROPERTY_NAME, `With @[${page_text}](${page_id})`);
+
+    expect(sut.build()).toHaveProperty(PROPERTY_NAME, {
+        title: [
+            {
+                text: {
+                    content: 'With ',
+                },
+                type: 'text',
+            },
+            {
+                type: 'mention',
+                mention: {
+                    type: 'page',
+                    page: {
+                        id: page_id,
+                    },
+                },
+                plain_text: page_text,
+                href: 'https://www.notion.so/' + page_id.replace(/-/g, ''),
+            },
+        ],
+        type: 'title',
+    });
+});
+
+test('builds a title with link', () => {
+    const sut = new PropertiesBuilder();
+
+    const link_text = 'Link';
+    const link_url = 'https://example.com/';
+
+    sut.title(PROPERTY_NAME, `With [${link_text}](${link_url})`);
+
+    expect(sut.build()).toHaveProperty(PROPERTY_NAME, {
+        title: [
+            {
+                text: {
+                    content: 'With ',
+                },
+                type: 'text',
+            },
+            {
+                type: 'text',
+                text: {
+                    content: link_text,
+                    link: {
+                        url: link_url,
+                    },
+                },
+                plain_text: link_text,
+                href: link_url,
+            },
+        ],
+        type: 'title',
+    });
+});
+
+test('builds a title with placeholder, mention, and link', () => {
+    const page = DummyPage.createWithId();
+
+    const sut = new PropertiesBuilder();
+
+    const link_text = 'Link';
+    const link_url = 'https://example.com/';
+
+    const page_text = 'Page';
+    const page_id = '6f7441d5-4a58-4cb0-9ce2-2e8051d57e3a';
+
+    sut.title(
+        PROPERTY_NAME,
+        `With #Placeholder, @[${page_text}](${page_id}), and [${link_text}](${link_url})!`,
+        new Replacement('Placeholder', page)
+    );
+
+    expect(sut.build()).toHaveProperty(PROPERTY_NAME, {
+        title: [
+            {
+                text: {
+                    content: 'With ',
+                },
+                type: 'text',
+            },
+            {
+                type: 'mention',
+                mention: {
+                    page: {
+                        id: page.id,
+                    },
+                    type: 'page',
+                },
+                plain_text: page.title,
+                href: 'https://www.notion.so/' + page.id.replace(/-/g, ''),
+            },
+            {
+                text: {
+                    content: ', ',
+                },
+                type: 'text',
+            },
+            {
+                type: 'mention',
+                mention: {
+                    type: 'page',
+                    page: {
+                        id: page_id,
+                    },
+                },
+                plain_text: page_text,
+                href: 'https://www.notion.so/' + page_id.replace(/-/g, ''),
+            },
+            {
+                text: {
+                    content: ', and ',
+                },
+                type: 'text',
+            },
+            {
+                type: 'text',
+                text: {
+                    content: link_text,
+                    link: {
+                        url: link_url,
+                    },
+                },
+                plain_text: link_text,
+                href: link_url,
+            },
+            {
+                text: {
+                    content: '!',
+                },
+                type: 'text',
+            },
+        ],
+        type: 'title',
+    });
+});

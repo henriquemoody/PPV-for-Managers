@@ -1,4 +1,6 @@
+import QueryPayload from './QueryPayload';
+
 export default interface Query {
-    getPayload(): GoogleAppsScript.URL_Fetch.Payload;
+    getPayload(): QueryPayload;
     getDatabaseId(): string;
 }

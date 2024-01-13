@@ -4,9 +4,9 @@ import DateFormatter from '../../helpers/DateFormatter';
 import PropertiesFormatter from '../PropertiesFormatter';
 import Page from '../Page';
 import PropertiesBuilder from '../PropertiesBuilder';
+import QueryResult from '../QueryResult';
 import TaskMap from './TaskMap';
 import {Size, Status} from '../enums';
-import {Result} from '../types';
 import Replacement from '../Replacement';
 
 export default class TaskPage extends Page {
@@ -53,7 +53,7 @@ export default class TaskPage extends Page {
         this.practices = [];
     }
 
-    static createFromResult(result: Result): TaskPage {
+    static createFromQueryResult(result: QueryResult): TaskPage {
         const formatter = new PropertiesFormatter(result.properties);
         const taskPage = new TaskPage(
             formatter.title(TaskMap.title),

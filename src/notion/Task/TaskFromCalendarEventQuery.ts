@@ -1,8 +1,8 @@
 import {TASKS_DATABASE_ID} from '../../config';
 
 import Query from '../Query';
+import QueryPayload from '../QueryPayload';
 import TaskMap from './TaskMap';
-import {Payload} from '../types';
 
 export default class TaskFromCalendarEventQuery implements Query {
     private readonly eventId: string;
@@ -15,7 +15,7 @@ export default class TaskFromCalendarEventQuery implements Query {
         return TASKS_DATABASE_ID;
     }
 
-    getPayload(): Payload {
+    getPayload(): QueryPayload {
         return {
             filter: {
                 property: TaskMap.eventId,

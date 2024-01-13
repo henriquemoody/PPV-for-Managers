@@ -4,9 +4,9 @@ import DateFormatter from '../../helpers/DateFormatter';
 import PropertiesFormatter from '../PropertiesFormatter';
 import Page from '../Page';
 import PropertiesBuilder from '../PropertiesBuilder';
+import QueryResult from '../QueryResult';
 import ScheduleMap from './ScheduleMap';
 import TaskPage from '../Task/TaskPage';
-import {Result} from '../types';
 import {Schedule, Size, Status} from '../enums';
 
 export default class SchedulePage extends Page {
@@ -38,7 +38,7 @@ export default class SchedulePage extends Page {
         this.day = day;
     }
 
-    static createFromResult(result: Result): SchedulePage {
+    static createFromQueryResult(result: QueryResult): SchedulePage {
         const formatter = new PropertiesFormatter(result.properties);
 
         return new SchedulePage(

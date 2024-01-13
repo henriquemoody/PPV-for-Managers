@@ -1,8 +1,8 @@
 import {SCHEDULES_DATABASE_ID} from '../../config';
 
 import Query from '../Query';
+import QueryPayload from '../QueryPayload';
 import ScheduleMap from './ScheduleMap';
-import {Payload} from '../types';
 import {Schedule} from '../enums';
 
 export default class ScheduleDailyQuery implements Query {
@@ -16,7 +16,7 @@ export default class ScheduleDailyQuery implements Query {
         return SCHEDULES_DATABASE_ID;
     }
 
-    getPayload(): Payload {
+    getPayload(): QueryPayload {
         const schedules = [Schedule.Daily];
         if (this.date.getDay() > 0 && this.date.getDay() < 6) {
             schedules.push(Schedule.Weekdays);

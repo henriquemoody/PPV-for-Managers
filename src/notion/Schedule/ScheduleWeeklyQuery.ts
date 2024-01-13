@@ -1,8 +1,8 @@
 import {SCHEDULES_DATABASE_ID} from '../../config';
 
 import Query from '../Query';
+import QueryPayload from '../QueryPayload';
 import ScheduleMap from './ScheduleMap';
-import {Payload} from '../types';
 import {Schedule} from '../enums';
 
 export default class ScheduleWeeklyQuery implements Query {
@@ -10,7 +10,7 @@ export default class ScheduleWeeklyQuery implements Query {
         return SCHEDULES_DATABASE_ID;
     }
 
-    getPayload(): Payload {
+    getPayload(): QueryPayload {
         const schedules = [
             Schedule.Monday,
             Schedule.Tuesday,

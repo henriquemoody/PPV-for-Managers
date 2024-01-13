@@ -3,7 +3,7 @@ import {DRY_RUN_MODE, NOTION_TOKEN} from '../config';
 import Logger from '../helpers/Logger';
 import Page from './Page';
 import Query from './Query';
-import {Result} from './types';
+import QueryResult from './QueryResult';
 
 const DEFAULT_HEADERS: GoogleAppsScript.URL_Fetch.HttpHeaders = {
     Authorization: `Bearer ${NOTION_TOKEN}`,
@@ -72,13 +72,13 @@ export default class Client {
         this.requests.length = 0;
     }
 
-    query(query: Query): Result[] {
+    query(query: Query): QueryResult[] {
         return this.fetch(`https://api.notion.com/v1/databases/${query.getDatabaseId()}/query`, query.getPayload())[
             'results'
         ];
     }
 
-    queryOne(query: Query): Result | null {
+    queryOne(query: Query): QueryResult | null {
         const results = this.fetch(
             `https://api.notion.com/v1/databases/${query.getDatabaseId()}/query`,
             query.getPayload()

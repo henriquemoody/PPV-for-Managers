@@ -30,7 +30,7 @@ function daily() {
     notionClient.save(dayPage);
     notionClient
         .query(new Notion.Schedule.DailyQuery(today))
-        .map((result) => Notion.Schedule.Page.createFromResult(result).toTask().addReplacement('Day', dayPage))
+        .map((result) => Notion.Schedule.Page.createFromQueryResult(result).toTask().addReplacement('Day', dayPage))
         .forEach((task) => notionClient.lazySave(task));
     notionClient.saveAll();
 }
@@ -40,7 +40,7 @@ function weekly() {
     notionClient.save(weekPage);
     notionClient
         .query(new Notion.Schedule.WeeklyQuery())
-        .map((result) => Notion.Schedule.Page.createFromResult(result).toTask().addReplacement('Week', weekPage))
+        .map((result) => Notion.Schedule.Page.createFromQueryResult(result).toTask().addReplacement('Week', weekPage))
         .forEach((task) => notionClient.lazySave(task));
     notionClient.saveAll();
 }
@@ -50,7 +50,7 @@ function monthly() {
     notionClient.save(monthPage);
     notionClient
         .query(new Notion.Schedule.MonthlyQuery())
-        .map((result) => Notion.Schedule.Page.createFromResult(result).toTask().addReplacement('Month', monthPage))
+        .map((result) => Notion.Schedule.Page.createFromQueryResult(result).toTask().addReplacement('Month', monthPage))
         .forEach((task) => notionClient.lazySave(task));
     notionClient.saveAll();
 }
@@ -62,7 +62,7 @@ function syncCalendarToNotion(calendarName: string) {
         const result = notionClient.queryOne(new Notion.Task.FromCalendarEventQuery(event.id));
 
         if (result !== null) {
-            const taskFromResult = Notion.Task.Page.createFromResult(result);
+            const taskFromResult = Notion.Task.Page.createFromQueryResult(result);
             taskFromEvent.merge(taskFromResult);
             if (taskFromResult.isUpToDate(taskFromEvent)) {
                 Logger.debug('Skipping up-to-dated => %s', taskFromResult.toString());

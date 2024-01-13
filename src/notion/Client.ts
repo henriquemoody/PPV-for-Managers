@@ -31,13 +31,10 @@ export default class Client {
         if (DRY_RUN_MODE) {
             return;
         }
+        const pageId = this.getIdFromResponse(UrlFetchApp.fetch(PAGE_URL, this.buildCreateRequestOptions(page)));
 
-        const response = UrlFetchApp.fetch(PAGE_URL, this.buildCreateRequestOptions(page));
-        const responseContent = JSON.parse(response.getContentText());
-
-        Logger.debug('Updating page ID => %s', page.toString());
-
-        page.id = responseContent.id;
+        Logger.debug('Updating page ID => %s # %s', page.toString(), pageId);
+        page.id = pageId;
     }
 
     lazySave(page: Page): void {
@@ -65,27 +62,11 @@ export default class Client {
 
         const responses = UrlFetchApp.fetchAll(this.requests.map((request) => request.request));
         for (let i = 0; i < responses.length; i++) {
-            const response = responses[i];
-            if (response.getResponseCode() === 200) {
-                const page = this.requests[i].page;
-                const responseContent = JSON.parse(response.getContentText());
+            const page = this.requests[i].page;
+            const pageId = this.getIdFromResponse(responses[i]);
 
-                page.id = responseContent.id;
-                continue;
-            }
-
-            if (response.getResponseCode() === 401) {
-                Logger.error('Notion token is invalid');
-            } else if (response.getResponseCode() === 404) {
-                Logger.error('Notion page not found');
-            } else if (response.getResponseCode() === 403) {
-                Logger.error('Notion page is private');
-            }
-
-            Logger.debug('Request ', JSON.stringify(this.requests[i]));
-
-            this.requests.length = 0;
-            throw new Error(response.getContentText());
+            Logger.debug('Updating page ID => %s # %s', page.toString(), pageId);
+            page.id = pageId;
         }
 
         this.requests.length = 0;
@@ -178,5 +159,15 @@ export default class Client {
                 archived: page.isArchived(),
             }),
         };
+    }
+
+    private getIdFromResponse(response: GoogleAppsScript.URL_Fetch.HTTPResponse): string {
+        if (response.getResponseCode() !== 200) {
+            throw new Error(response.getContentText());
+        }
+
+        const content = JSON.parse(response.getContentText());
+
+        return content.id;
     }
 }

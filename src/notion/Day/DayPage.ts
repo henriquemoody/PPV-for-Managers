@@ -6,11 +6,11 @@ import Page from '../Page';
 import PropertiesBuilder from '../PropertiesBuilder';
 
 export default class DayPage extends Page {
-    public start: string;
+    public date: string;
 
     private constructor(title: string, start: string) {
         super(DAYS_DATABASE_ID, title);
-        this.start = start;
+        this.date = start;
     }
 
     static createFromDate(date: Date): DayPage {
@@ -18,6 +18,6 @@ export default class DayPage extends Page {
     }
 
     toProperties(): object {
-        return new PropertiesBuilder().title(DayMap.title, this.title).date(DayMap.date, this.start).build();
+        return new PropertiesBuilder().title(DayMap.title, this.title).date(DayMap.date, this.date).build();
     }
 }

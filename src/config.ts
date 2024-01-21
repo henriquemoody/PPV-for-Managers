@@ -30,6 +30,8 @@ export const DAYS_DATABASE_ID: string = <string>propertyValue('DAYS_DATABASE_ID'
 export const SCHEDULES_DATABASE_ID: string = <string>propertyValue('SCHEDULES_DATABASE_ID');
 export const TASKS_DATABASE_ID: string = <string>propertyValue('TASKS_DATABASE_ID');
 export const WEEKS_DATABASE_ID: string = <string>propertyValue('WEEKS_DATABASE_ID');
+export const HABITS_DATABASE_ID: string = <string>propertyValue('HABITS_DATABASE_ID');
+export const PULSE_DATABASE_ID: string = <string>propertyValue('PULSE_DATABASE_ID');
 export const MONTHS_DATABASE_ID: string = <string>propertyValue('MONTHS_DATABASE_ID');
 
 export const LOGGER_LEVEL: LogLevel = <LogLevel>propertyDecode('LOGGER_LEVEL', LogLevel.INFO);

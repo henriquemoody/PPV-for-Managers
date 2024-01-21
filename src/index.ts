@@ -28,6 +28,8 @@ function hourly() {
 function daily() {
     const dayPage = Notion.Day.Page.createFromDate(today);
     notionClient.save(dayPage);
+    notionClient.save(Notion.Habits.Page.createFromDayPage(dayPage));
+    notionClient.save(Notion.Pulse.Page.createFromDayPage(dayPage));
     notionClient
         .query(new Notion.Schedule.DailyQuery(today))
         .map((result) => Notion.Schedule.Page.createFromQueryResult(result).toTask().addReplacement('Day', dayPage))

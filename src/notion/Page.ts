@@ -16,6 +16,10 @@ export default abstract class Page {
         return this._databaseId;
     }
 
+    get iconUrl(): string | null {
+        return null;
+    }
+
     toString(): string {
         if (this.isArchived()) {
             return Utilities.formatString('%s (archived %s)', this.title, this.constructor.name);

@@ -26,6 +26,10 @@ export default class MonthPage extends Page {
         );
     }
 
+    get iconUrl(): string {
+        return 'https://www.notion.so/icons/calendar-month_lightgray.svg?mode=light';
+    }
+
     toProperties(): object {
         return new PropertiesBuilder()
             .title(MonthMap.title, this.title)

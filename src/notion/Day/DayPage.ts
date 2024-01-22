@@ -17,6 +17,10 @@ export default class DayPage extends Page {
         return new DayPage(DateFormatter.prettyDate(date), DateFormatter.date(date));
     }
 
+    get iconUrl(): string {
+        return 'https://www.notion.so/icons/calendar-day_lightgray.svg?mode=light';
+    }
+
     toProperties(): object {
         return new PropertiesBuilder().title(DayMap.title, this.title).date(DayMap.date, this.date).build();
     }

@@ -14,6 +14,19 @@ const DEFAULT_HEADERS: GoogleAppsScript.URL_Fetch.HttpHeaders = {
 
 const PAGE_URL = 'https://api.notion.com/v1/pages';
 
+interface Payload {
+    properties: object;
+    icon?: object;
+}
+
+interface CreatePayload extends Payload {
+    parent: object;
+}
+
+interface UpdatePayload extends Payload {
+    archived: boolean;
+}
+
 export default class Client {
     private readonly requests: {page: Page; request: GoogleAppsScript.URL_Fetch.URLFetchRequest}[];
     constructor() {
@@ -128,17 +141,22 @@ export default class Client {
     }
 
     private buildCreateRequestOptions(page: Page): GoogleAppsScript.URL_Fetch.URLFetchRequestOptions {
+        const payload: CreatePayload = {
+            parent: {
+                type: 'database_id',
+                database_id: page.databaseId,
+            },
+            properties: page.toProperties(),
+        };
+        if (page.iconUrl !== null) {
+            payload.icon = {type: 'external', external: {url: page.iconUrl}};
+        }
+
         return {
             method: 'post',
             headers: DEFAULT_HEADERS,
             muteHttpExceptions: true,
-            payload: JSON.stringify({
-                parent: {
-                    type: 'database_id',
-                    database_id: page.databaseId,
-                },
-                properties: page.toProperties(),
-            }),
+            payload: JSON.stringify(payload),
         };
     }
 
@@ -150,14 +168,19 @@ export default class Client {
     }
 
     private buildUpdateRequestOptions(page: Page): GoogleAppsScript.URL_Fetch.URLFetchRequestOptions {
+        const payload: UpdatePayload = {
+            properties: page.toProperties(),
+            archived: page.isArchived(),
+        };
+        if (page.iconUrl !== null) {
+            payload.icon = {type: 'external', external: {url: page.iconUrl}};
+        }
+
         return {
             method: 'patch',
             headers: DEFAULT_HEADERS,
             muteHttpExceptions: true,
-            payload: JSON.stringify({
-                properties: page.toProperties(),
-                archived: page.isArchived(),
-            }),
+            payload: JSON.stringify(payload),
         };
     }
 

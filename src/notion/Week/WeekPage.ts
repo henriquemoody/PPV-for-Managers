@@ -22,6 +22,10 @@ export default class WeekPage extends Page {
         return new WeekPage(DateFormatter.prettyWeek(date), DateFormatter.date(date), DateFormatter.date(end));
     }
 
+    get iconUrl(): string {
+        return 'https://www.notion.so/icons/calendar-week_lightgray.svg?mode=light';
+    }
+
     toProperties(): object {
         return new PropertiesBuilder()
             .title(WeekMap.title, this.title)

@@ -89,23 +89,6 @@ function syncCalendarToNotion(calendarName: string) {
 }
 
 function createTaskPageFromEvent(event: Calendar.Event): Notion.Task.Page {
-    const formatDescription = (description: string): string | null => {
-        if (!description) {
-            return null;
-        }
-
-        const formatted = description
-            .replace(/<br\/?>/g, '\n')
-            .replace(/\s+/g, ' ')
-            .replace(/<[^>]+>/g, '')
-            .trim();
-        if (formatted.length <= 250) {
-            return formatted;
-        }
-
-        return formatted.substring(0, 247) + '...';
-    };
-
     const formatSize = (event: Calendar.Event): Notion.Enum.Size => {
         if (event.isAllDay) {
             return Notion.Enum.Size.EXTRA_LARGE;
@@ -145,7 +128,6 @@ function createTaskPageFromEvent(event: Calendar.Event): Notion.Task.Page {
 
     return new Notion.Task.Page(
         event.summary || '',
-        formatDescription(event.description) || null,
         event.status === 'cancelled' ? Notion.Enum.Status.CANCELED : Notion.Enum.Status.ACTIVE,
         Notion.Enum.Priority.SCHEDULED,
         formatSize(event),

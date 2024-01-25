@@ -70,15 +70,7 @@ export default class SchedulePage extends Page {
             date.setDate(date.getDate() + ((daysOfWeek[this.schedule] + 7 - date.getDay()) % 7));
         }
 
-        const task = new TaskPage(
-            this.title,
-            null,
-            Status.ACTIVE,
-            this.priority,
-            this.size,
-            true,
-            DateFormatter.date(date)
-        );
+        const task = new TaskPage(this.title, Status.ACTIVE, this.priority, this.size, true, DateFormatter.date(date));
         task.pillars = this.pillars;
         task.projects = this.projects;
         task.practices = this.practices;

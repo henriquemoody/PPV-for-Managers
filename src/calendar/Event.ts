@@ -3,7 +3,7 @@ import {CALENDAR_IDS, CALENDAR_IGNORE_REGEXP} from '../config';
 import DateFormatter from '../helpers/DateFormatter';
 
 export default class Event {
-    public id?: string;
+    public id: string;
     public isAllDay: boolean;
     public isRecurring: boolean;
     public start: Date;
@@ -14,6 +14,7 @@ export default class Event {
     public calendar: string;
 
     constructor(
+        id: string,
         calendar: string,
         isAllDay: boolean,
         isRecurring: boolean,
@@ -23,6 +24,7 @@ export default class Event {
         status: string,
         summary: string
     ) {
+        this.id = id;
         this.calendar = calendar;
         this.isAllDay = isAllDay;
         this.isRecurring = isRecurring;
@@ -51,7 +53,8 @@ export default class Event {
             summary = summary + ' (' + DateFormatter.prettyShortDate(start) + ')';
         }
 
-        const event = new Event(
+        return new Event(
+            calendarEvent.id.split('@')[0],
             calendar,
             allDay,
             isRecurring,
@@ -62,9 +65,6 @@ export default class Event {
             calendarEvent.status,
             summary,
         );
-        event.updateId(calendarEvent.id);
-
-        return event;
     }
 
     get calendarId(): string {
@@ -83,23 +83,6 @@ export default class Event {
             DateFormatter.dateTime(this.start),
             DateFormatter.dateTime(this.end),
             this.calendar
-        );
-    }
-
-    updateId(id: string) {
-        this.id = id.split('@')[0];
-    }
-
-    isUpToDate(event: Event): boolean {
-        return (
-            this.id === event.id &&
-            this.isAllDay === event.isAllDay &&
-            this.isRecurring === event.isRecurring &&
-            this.start.toISOString() === event.start.toISOString() &&
-            this.end.toISOString() === event.end.toISOString() &&
-            this.type === event.type &&
-            this.status === event.status &&
-            this.summary === event.summary
         );
     }
 

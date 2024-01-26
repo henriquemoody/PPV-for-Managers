@@ -11,7 +11,6 @@ export default class Event {
     public type: string;
     public status: string;
     public summary: string;
-    public description?: string;
     public calendar: string;
 
     constructor(
@@ -22,8 +21,7 @@ export default class Event {
         end: Date,
         eventType: string,
         status: string,
-        summary: string,
-        description?: string
+        summary: string
     ) {
         this.calendar = calendar;
         this.isAllDay = isAllDay;
@@ -33,7 +31,6 @@ export default class Event {
         this.type = eventType;
         this.status = status;
         this.summary = summary;
-        this.description = description;
     }
 
     static createCalendarAndEvent(calendar: string, calendarEvent: GoogleAppsScript.Calendar.Schema.Event): Event {
@@ -64,7 +61,6 @@ export default class Event {
             calendarEvent.eventType,
             calendarEvent.status,
             summary,
-            calendarEvent.description || null
         );
         event.updateId(calendarEvent.id);
 

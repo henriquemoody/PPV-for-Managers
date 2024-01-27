@@ -2,6 +2,7 @@ export * as Day from './Day';
 export * as Enum from './enums';
 export * as Habits from './Habits';
 export * as Month from './Month';
+export * as Person from './Person';
 export * as Pulse from './Pulse';
 export * as Schedule from './Schedule';
 export * as Task from './Task';

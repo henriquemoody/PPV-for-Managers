@@ -66,12 +66,15 @@ function syncCalendarToNotion(calendarName: string) {
         if (result !== null) {
             const taskFromResult = Notion.Task.Page.createFromQueryResult(result);
             taskFromEvent.merge(taskFromResult);
+
+            Logger.debug('Event', event);
+            Logger.debug('Task from event', taskFromEvent);
+            Logger.debug('Task from Notion', taskFromResult);
+
             if (taskFromResult.isUpToDate(taskFromEvent)) {
                 Logger.debug('Skipping up-to-dated => %s', taskFromResult.toString());
                 return;
             }
-            Logger.debug('Calendar', taskFromEvent);
-            Logger.debug('Notion', taskFromResult);
 
             notionClient.lazySave(taskFromEvent);
             return;
@@ -126,6 +129,14 @@ function createTaskPageFromEvent(event: Calendar.Event): Notion.Task.Page {
         end = DateFormatter.dateTime(event.end);
     }
 
+    const people = new Array<string>();
+    for (const attendee of event.attendees) {
+        const result = notionClient.cacheableQueryOne(new Notion.Person.Query(attendee.name, attendee.email));
+        if (result !== null) {
+            people.push(result.id);
+        }
+    }
+
     return new Notion.Task.Page(
         event.summary || '',
         event.status === 'cancelled' ? Notion.Enum.Status.CANCELED : Notion.Enum.Status.ACTIVE,
@@ -135,6 +146,7 @@ function createTaskPageFromEvent(event: Calendar.Event): Notion.Task.Page {
         start,
         end,
         event.id,
-        event.calendar
+        event.calendar,
+        people
     );
 }

@@ -4,6 +4,7 @@ import Logger from '../helpers/Logger';
 import Page from './Page';
 import Query from './Query';
 import QueryResult from './QueryResult';
+import CacheableQuery from './CacheableQuery';
 
 const DEFAULT_HEADERS: GoogleAppsScript.URL_Fetch.HttpHeaders = {
     Authorization: `Bearer ${NOTION_TOKEN}`,
@@ -13,6 +14,7 @@ const DEFAULT_HEADERS: GoogleAppsScript.URL_Fetch.HttpHeaders = {
 };
 
 const PAGE_URL = 'https://api.notion.com/v1/pages';
+const cache = CacheService.getScriptCache();
 
 interface Payload {
     properties: object;
@@ -106,6 +108,26 @@ export default class Client {
         }
 
         return results[0];
+    }
+
+    cacheableQueryOne(query: CacheableQuery): QueryResult | null {
+        const key = query.getCacheKey();
+        const cached = cache.get(key);
+        if (cached !== null) {
+            Logger.debug('Found data in cache', key, cached);
+            return JSON.parse(cached);
+        }
+
+        const result = this.queryOne(query);
+        if (result !== null) {
+            Logger.debug('Saving data in cache', key, result);
+            cache.put(key, JSON.stringify(result));
+        } else {
+            Logger.debug('Saving empty data in cache for 5 minutes', key, result);
+            cache.put(key, JSON.stringify(result), 60 * 5);
+        }
+
+        return result;
     }
 
     private fetch(url: string, payload: GoogleAppsScript.URL_Fetch.Payload): object {

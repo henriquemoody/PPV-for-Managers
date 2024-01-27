@@ -12,6 +12,7 @@ export default class Event {
     public status: string;
     public summary: string;
     public calendar: string;
+    public attendees: {name: string; email: string}[];
 
     constructor(
         id: string,
@@ -22,7 +23,8 @@ export default class Event {
         end: Date,
         eventType: string,
         status: string,
-        summary: string
+        summary: string,
+        attendees: {name: string; email: string}[]
     ) {
         this.id = id;
         this.calendar = calendar;
@@ -33,6 +35,7 @@ export default class Event {
         this.type = eventType;
         this.status = status;
         this.summary = summary;
+        this.attendees = attendees;
     }
 
     static createCalendarAndEvent(calendar: string, calendarEvent: GoogleAppsScript.Calendar.Schema.Event): Event {
@@ -64,6 +67,17 @@ export default class Event {
             calendarEvent.eventType,
             calendarEvent.status,
             summary,
+            calendarEvent.attendees === undefined
+                ? []
+                : calendarEvent.attendees
+                      .filter((attendee) => attendee.self === undefined || attendee.self === false)
+                      .filter((attendee) => attendee.responseStatus !== 'declined')
+                      .map((attendee) => {
+                          return {
+                              name: attendee.displayName,
+                              email: attendee.email,
+                          };
+                      })
         );
     }
 

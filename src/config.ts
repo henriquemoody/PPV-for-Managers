@@ -33,6 +33,7 @@ export const WEEKS_DATABASE_ID: string = <string>propertyValue('WEEKS_DATABASE_I
 export const HABITS_DATABASE_ID: string = <string>propertyValue('HABITS_DATABASE_ID');
 export const PULSE_DATABASE_ID: string = <string>propertyValue('PULSE_DATABASE_ID');
 export const MONTHS_DATABASE_ID: string = <string>propertyValue('MONTHS_DATABASE_ID');
+export const PEOPLE_DATABASE_ID: string = <string>propertyValue('PEOPLE_DATABASE_ID');
 
 export const LOGGER_LEVEL: LogLevel = <LogLevel>propertyDecode('LOGGER_LEVEL', LogLevel.INFO);
 export const LOGGER_SHOWN_AFTER_ERROR: number = <number>propertyDecode('LOGGER_SHOWN_AFTER_ERROR', 5);

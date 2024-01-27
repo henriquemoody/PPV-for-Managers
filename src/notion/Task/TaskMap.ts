@@ -9,6 +9,7 @@ enum TaskMap {
     pillars = 'Pillars',
     projects = 'Projects',
     practices = 'Practices',
+    people = 'People',
 
     eventId = 'Event ID',
     calendar = 'Calendar',

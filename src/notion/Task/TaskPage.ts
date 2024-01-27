@@ -64,7 +64,7 @@ export default class TaskPage extends Page {
             formatter.select(TaskMap.calendar)
         );
         taskPage.id = result.id;
-        taskPage.lastSyncTime = new Date(TaskMap.lastSyncTime);
+        taskPage.lastSyncTime = new Date(formatter.dateStart(TaskMap.lastSyncTime));
         taskPage.lastEditedTime = new Date(result.last_edited_time);
         taskPage.pillars = formatter.relation(TaskMap.pillars);
         taskPage.projects = formatter.relation(TaskMap.projects);

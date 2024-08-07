@@ -27,6 +27,10 @@ export default class PropertiesFormatter {
         return this.properties[property].select?.name ?? null;
     }
 
+    multiSelect(property: string): Array<string> {
+        return this.properties[property].multi_select?.map((select) => select.name) ?? [];
+    }
+
     checkbox(property: string): boolean {
         return this.properties[property].checkbox;
     }

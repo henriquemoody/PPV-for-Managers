@@ -16,6 +16,22 @@ export enum Schedule {
     Sunday = 'Sunday',
 }
 
+export enum Frequency {
+    Daily = 'Daily',
+    Weekly = 'Weekly',
+    Monthly = 'Monthly',
+}
+
+export enum DayOfTheWeek {
+    Monday = 'Monday',
+    Tuesday = 'Tuesday',
+    Wednesday = 'Wednesday',
+    Thursday = 'Thursday',
+    Friday = 'Friday',
+    Saturday = 'Saturday',
+    Sunday = 'Sunday',
+}
+
 export enum Status {
     ACTIVE = 'Active',
     CANCELED = 'Canceled',

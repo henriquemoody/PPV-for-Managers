@@ -6,7 +6,10 @@ enum ScheduleMap {
     projects = 'Projects',
     practices = 'Practices',
     schedule = 'Schedule',
-    day = 'Day',
+    startOn = 'Start on',
+    interval = 'Interval',
+    frequency = 'Frequency',
+    daysOfTheWeek = 'Days of the Week',
 }
 
 export default ScheduleMap;

@@ -130,6 +130,16 @@ test('formats a select when it has a value', () => {
     expect(sut.select(PROPERTY_NAME)).toBe(expected);
 });
 
+test('formats a multi-select when it has a value', () => {
+    const expected = ['A', 'B', 'C'];
+    const sut = new PropertiesFormatter({
+        [PROPERTY_NAME]: {
+            multi_select: [{name: expected[0]}, {name: expected[1]}, {name: expected[2]}],
+        },
+    });
+    expect(sut.multiSelect(PROPERTY_NAME)).toMatchObject(expected);
+});
+
 test('formats a relation', () => {
     const expected = ['bd198148-62fe-4d4b-b0a1-b4328a4406b1', 'd73f5032-f80a-4795-9432-3fc85a5880a4'];
     const sut = new PropertiesFormatter({

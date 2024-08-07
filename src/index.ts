@@ -4,6 +4,7 @@ import * as Calendar from './calendar';
 import * as Notion from './notion';
 import DateFormatter from './helpers/DateFormatter';
 import Logger from './helpers/Logger';
+import {Frequency} from './notion/enums';
 
 const notionClient = new Notion.Client();
 const calendarClient = new Calendar.Client();
@@ -31,18 +32,28 @@ function daily() {
     notionClient.save(Notion.Habits.Page.createFromDayPage(dayPage));
     notionClient.save(Notion.Pulse.Page.createFromDayPage(dayPage));
     notionClient
-        .query(new Notion.Schedule.DailyQuery(today))
-        .map((result) => Notion.Schedule.Page.createFromQueryResult(result).toTask().addReplacement('Day', dayPage))
+        .query(new Notion.Schedule.Query(today, Frequency.Daily))
+        .map((result) => Notion.Schedule.Page.createFromQueryResult(result).toTasks(today))
+        .flat()
+        .filter((task) => task.start === DateFormatter.date(today))
+        .map((task) => task.addReplacement('Day', dayPage))
         .forEach((task) => notionClient.lazySave(task));
     notionClient.saveAll();
 }
 
 function weekly() {
+    const endOfTheWeek = new Date(today);
+    endOfTheWeek.setDate(today.getDate() + 6);
+    endOfTheWeek.setHours(23, 59, 59, 999);
+
     const weekPage = Notion.Week.Page.createFromDate(today);
     notionClient.save(weekPage);
     notionClient
-        .query(new Notion.Schedule.WeeklyQuery())
-        .map((result) => Notion.Schedule.Page.createFromQueryResult(result).toTask().addReplacement('Week', weekPage))
+        .query(new Notion.Schedule.Query(today, Frequency.Weekly))
+        .map((result) => Notion.Schedule.Page.createFromQueryResult(result).toTasks(today))
+        .flat()
+        .filter((task) => new Date(task.start) <= endOfTheWeek)
+        .map((task) => task.addReplacement('Week', weekPage))
         .forEach((task) => notionClient.lazySave(task));
     notionClient.saveAll();
 }
@@ -51,8 +62,15 @@ function monthly() {
     let monthPage = Notion.Month.Page.createFromDate(today);
     notionClient.save(monthPage);
     notionClient
-        .query(new Notion.Schedule.MonthlyQuery())
-        .map((result) => Notion.Schedule.Page.createFromQueryResult(result).toTask().addReplacement('Month', monthPage))
+        .query(new Notion.Schedule.Query(today, Frequency.Monthly))
+        .map((result) => Notion.Schedule.Page.createFromQueryResult(result).toTasks(today))
+        .flat()
+        .filter(
+            (task) =>
+                new Date(task.start).getFullYear() === today.getFullYear() &&
+                new Date(task.start).getMonth() === today.getMonth()
+        )
+        .map((task) => task.addReplacement('Month', monthPage))
         .forEach((task) => notionClient.lazySave(task));
     notionClient.saveAll();
 }

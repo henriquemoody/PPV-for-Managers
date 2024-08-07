@@ -7,7 +7,17 @@ import PropertiesBuilder from '../PropertiesBuilder';
 import QueryResult from '../QueryResult';
 import ScheduleMap from './ScheduleMap';
 import TaskPage from '../Task/TaskPage';
-import {Schedule, Size, Status} from '../enums';
+import {DayOfTheWeek, Frequency, Schedule, Size, Status} from '../enums';
+
+const daysOfWeek = [
+    DayOfTheWeek.Sunday,
+    DayOfTheWeek.Monday,
+    DayOfTheWeek.Tuesday,
+    DayOfTheWeek.Wednesday,
+    DayOfTheWeek.Thursday,
+    DayOfTheWeek.Friday,
+    DayOfTheWeek.Saturday,
+];
 
 export default class SchedulePage extends Page {
     public readonly priority: string;
@@ -16,17 +26,22 @@ export default class SchedulePage extends Page {
     public readonly practices: Array<string>;
     public readonly schedule: Schedule;
     public readonly size: Size;
-    public readonly day: number | null;
+    public readonly startOn: Date;
+    public readonly interval: number;
+    public readonly intervalType: Frequency;
+    public readonly daysOfTheWeek: Array<DayOfTheWeek>;
 
-    private constructor(
+    public constructor(
         title: string,
         priority: string,
         size: Size,
         pillars: string[],
         projects: string[],
         practices: string[],
-        schedule: Schedule,
-        day: number | null
+        startOn: Date,
+        interval: number,
+        intervalType: Frequency,
+        daysOfTheWeek: DayOfTheWeek[]
     ) {
         super(SCHEDULES_DATABASE_ID, title);
         this.priority = priority;
@@ -34,8 +49,10 @@ export default class SchedulePage extends Page {
         this.pillars = pillars;
         this.projects = projects;
         this.practices = practices;
-        this.schedule = schedule;
-        this.day = day;
+        this.startOn = startOn;
+        this.interval = interval;
+        this.intervalType = intervalType;
+        this.daysOfTheWeek = daysOfTheWeek;
     }
 
     static createFromQueryResult(result: QueryResult): SchedulePage {
@@ -48,34 +65,65 @@ export default class SchedulePage extends Page {
             formatter.relation(ScheduleMap.pillars),
             formatter.relation(ScheduleMap.projects),
             formatter.relation(ScheduleMap.practices),
-            <Schedule>formatter.select(ScheduleMap.schedule),
-            formatter.number(ScheduleMap.day)
+            new Date(formatter.dateStart(ScheduleMap.startOn)),
+            formatter.number(ScheduleMap.interval),
+            <Frequency>formatter.select(ScheduleMap.frequency),
+            <Array<DayOfTheWeek>>formatter.multiSelect(ScheduleMap.daysOfTheWeek)
         );
     }
 
-    toTask(): TaskPage {
-        const date = new Date();
-        const daysOfWeek = {
-            [Schedule.Monday]: 1,
-            [Schedule.Tuesday]: 2,
-            [Schedule.Wednesday]: 3,
-            [Schedule.Thursday]: 4,
-            [Schedule.Friday]: 5,
-            [Schedule.Saturday]: 6,
-            [Schedule.Sunday]: 7,
-        };
-        if (this.day !== null) {
-            date.setDate(this.day);
-        } else if (this.schedule in daysOfWeek) {
-            date.setDate(date.getDate() + ((daysOfWeek[this.schedule] + 7 - date.getDay()) % 7));
+    toTasks(today: Date): Array<TaskPage> {
+        const daysOfTheWeek = this.daysOfTheWeek.length > 0 ? this.daysOfTheWeek : [daysOfWeek[today.getDay() - 1]];
+
+        return daysOfTheWeek.map((dayOfTheWeek: DayOfTheWeek) => {
+            const task = new TaskPage(
+                this.title,
+                Status.ACTIVE,
+                this.priority,
+                this.size,
+                true,
+                DateFormatter.date(this.getNextDate(today, dayOfTheWeek))
+            );
+
+            task.pillars = this.pillars;
+            task.projects = this.projects;
+            task.practices = this.practices;
+
+            return task;
+        });
+    }
+
+    private getNextDate(today: Date, dayOfTheWeek: DayOfTheWeek): Date {
+        let nextDate = new Date(this.startOn);
+        if (nextDate <= today) {
+            while (nextDate <= today) {
+                if (this.intervalType === Frequency.Daily) {
+                    nextDate.setDate(nextDate.getDate() + this.interval);
+                    continue;
+                }
+
+                if (this.intervalType === Frequency.Monthly) {
+                    nextDate.setMonth(nextDate.getMonth() + this.interval);
+                    continue;
+                }
+
+                nextDate.setDate(nextDate.getDate() + this.interval * 7);
+            }
         }
 
-        const task = new TaskPage(this.title, Status.ACTIVE, this.priority, this.size, true, DateFormatter.date(date));
-        task.pillars = this.pillars;
-        task.projects = this.projects;
-        task.practices = this.practices;
+        if (this.intervalType !== Frequency.Weekly) {
+            return nextDate;
+        }
 
-        return task;
+        nextDate.setDate(nextDate.getDate() - ((nextDate.getDay() + 6) % 7));
+
+        const dayIndex = daysOfWeek.indexOf(dayOfTheWeek);
+        const dayDiff = (dayIndex - nextDate.getDay() + 7) % 7;
+        if (dayDiff > 0) {
+            nextDate.setDate(nextDate.getDate() + dayDiff);
+        }
+
+        return nextDate;
     }
 
     toProperties(): object {
@@ -87,10 +135,6 @@ export default class SchedulePage extends Page {
             .relation(ScheduleMap.projects, this.projects)
             .relation(ScheduleMap.practices, this.practices)
             .select(ScheduleMap.schedule, this.schedule);
-
-        if (this.day !== null) {
-            builder.number(ScheduleMap.day, this.day);
-        }
 
         return builder.build();
     }
